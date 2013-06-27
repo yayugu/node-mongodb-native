@@ -129,12 +129,12 @@ exports.shouldCorrectlyWriteLargeFileBufferAndReadBack = function(configuration,
 exports.shouldCorrectlyReadFileUsingStream = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+    
     // Open a file for reading
     var gridStoreR = new GridStore(db, "test_gs_read_stream", "r");
     // Open a file for writing
@@ -194,12 +194,12 @@ exports.shouldCorrectlyReadFileUsingStream = function(configuration, test) {
  */
 exports.shouldCorrectlyPipeAGridFsToAfile = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;    
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+    
     // Open a file for writing
     var gridStoreWrite = new GridStore(db, "test_gs_read_stream_pipe", "w", {chunkSize:1024});
     gridStoreWrite.writeFile("./test/tests/functional/gridstore/test_gs_weird_bug.png", function(err, result) {      

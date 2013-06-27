@@ -4,21 +4,19 @@
 exports.shouldCorrectlyEmitErrorOnAllDbsOnPoolClose = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
   if(process.platform !== 'linux') {
-    // var db = new Db('tests', new Server("127.0.0.1", 27027, {auto_reconnect: true}), {w:0, native_parser: (process.env['TEST_NATIVE'] != null)});
-    var db = configuration.newDbInstance({w:1}, {poolSize:1});
     // All inserted docs
     var docs = [];
     var errs = [];
     var insertDocs = [];
     var numberOfCloses = 0;
 
-    // Start server
-    db.on("close", function(err) {
-      // console.log("+++++++++++++++++++++++++++++++++++++++++++++++ 1 :: " + this.databaseName)
-      numberOfCloses = numberOfCloses + 1;
-    })
-    
-    db.open(function(err, db) {
+    configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+      // Start server
+      db.on("close", function(err) {
+        // console.log("+++++++++++++++++++++++++++++++++++++++++++++++ 1 :: " + this.databaseName)
+        numberOfCloses = numberOfCloses + 1;
+      })
+
       db.createCollection('shouldCorrectlyErrorOnAllDbs', function(err, collection) {
         test.equal(null, err);
 
@@ -36,9 +34,6 @@ exports.shouldCorrectlyEmitErrorOnAllDbsOnPoolClose = function(configuration, te
           });
 
           db.close();
-                              
-          // // Kill server and end test
-          // db.serverConfig.connectionPool.openConnections[0].connection.destroy();
         });
       });
     });      
@@ -54,11 +49,14 @@ exports.shouldCorrectlyEmitErrorOnAllDbsOnPoolClose = function(configuration, te
  */
 exports.shouldCorrectlyUseSameConnectionsForTwoDifferentDbs = function(configuration, test) {
   var client = configuration.db();
-  var second_test_database = configuration.newDbInstance({w:1}, {poolSize:1});
-  // Just create second database
-  second_test_database.open(function(err, second_test_database) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Close second database
-    second_test_database.close();
+    db.close();
     // Let's grab a connection to the different db resusing our connection pools
     var secondDb = client.db(configuration.db_name + "_2");
     secondDb.createCollection('shouldCorrectlyUseSameConnectionsForTwoDifferentDbs', function(err, collection) {
@@ -98,12 +96,12 @@ exports.shouldCorrectlyUseSameConnectionsForTwoDifferentDbs = function(configura
  * @_function db
  */
 exports.shouldCorrectlyShareConnectionPoolsAcrossMultipleDbInstances = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+    
     test.equal(null, err);
     
     // Reference a different database sharing the same connections

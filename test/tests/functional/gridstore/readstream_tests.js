@@ -8,12 +8,12 @@
 exports.shouldStreamDocumentsUsingTheReadStreamPauseFunction = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+    
     // File id
     var fileId = new ObjectID();
     // Create a file
@@ -69,12 +69,12 @@ exports.shouldStreamDocumentsUsingTheReadStreamPauseFunction = function(configur
 exports.shouldStreamDocumentsUsingTheReadStreamResumeFunction = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+
     // File id
     var fileId = new ObjectID();
     // Create a file
@@ -144,12 +144,12 @@ exports.shouldStreamDocumentsUsingTheReadStreamResumeFunction = function(configu
 exports.shouldStreamDocumentsUsingTheReadStreamDestroyFunction = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
+    
     // File id
     var fileId = new ObjectID();
     // Create a file

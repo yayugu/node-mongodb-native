@@ -8,12 +8,11 @@ var Step = require('step');
  * @ignore
  */
 exports.shouldCorrectlySaveASimpleDocument = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Fetch the collection
     var collection = db.collection("save_a_simple_document");
@@ -43,12 +42,11 @@ exports.shouldCorrectlySaveASimpleDocument = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlySaveASimpleDocumentModifyItAndResaveIt = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Fetch the collection
     var collection = db.collection("save_a_simple_document_modify_it_and_resave_it");
@@ -213,12 +211,11 @@ exports.shouldCorrectlyDropCollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyDropCollectionWithDropFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('test_other_drop', function(err, collection) {
@@ -291,12 +288,10 @@ exports.shouldCorrectlyRetriveCollectionNames = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyRetrieveCollectionInfo = function(configuration, test) {
-  var Cursor = configuration.getMongoPackage().Cursor;
   var client = configuration.db();
 
   client.createCollection('test_collections_info', function(err, r) {
     client.collectionsInfo(function(err, cursor) {
-      test.ok((cursor instanceof Cursor));
       // Fetch all the collection info
       cursor.toArray(function(err, documents) {
         test.ok(documents.length > 1);
@@ -320,17 +315,15 @@ exports.shouldCorrectlyRetrieveCollectionInfo = function(configuration, test) {
  * @_function options
  */
 exports.shouldCorrectlyRetriveCollectionOptions = function(configuration, test) {
-  var Collection = configuration.getMongoPackage().Collection;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection that we are getting the options back from
     db.createCollection('test_collection_options', {'capped':true, 'size':1024}, function(err, collection) {
-      test.ok(collection instanceof Collection);
+      test.ok(collection.count);
       test.equal('test_collection_options', collection.collectionName);
 
       // Let's fetch the collection options
@@ -354,17 +347,15 @@ exports.shouldCorrectlyRetriveCollectionOptions = function(configuration, test) 
  * @_function isCapped
  */
 exports.shouldCorrectlyExecuteIsCapped = function(configuration, test) {
-  var Collection = configuration.getMongoPackage().Collection;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection that we are getting the options back from
     db.createCollection('test_collection_is_capped', {'capped':true, 'size':1024}, function(err, collection) {
-      test.ok(collection instanceof Collection);
+      test.ok(collection.count);
       test.equal('test_collection_is_capped', collection.collectionName);
 
       // Let's fetch the collection options
@@ -386,12 +377,11 @@ exports.shouldCorrectlyExecuteIsCapped = function(configuration, test) {
  * @_function indexExists
  */
 exports.shouldCorrectlyExecuteIndexExists = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection that we are getting the options back from
     db.createCollection('test_collection_index_exists', {w: 1}, function(err, collection) {
@@ -427,7 +417,6 @@ exports.shouldCorrectlyExecuteIndexExists = function(configuration, test) {
  * @ignore
  */
 exports.shouldEnsureStrictAccessCollection = function(configuration, test) {
-  var Collection = configuration.getMongoPackage().Collection;
   var error_client = configuration.db();
 
   error_client.collection('does-not-exist', {strict: true}, function(err, collection) {
@@ -437,7 +426,7 @@ exports.shouldEnsureStrictAccessCollection = function(configuration, test) {
 
   error_client.createCollection('test_strict_access_collection', function(err, collection) {
     error_client.collection('test_strict_access_collection', {w: 1}, function(err, collection) {
-      test.ok(collection instanceof Collection);
+      test.ok(collection.count);
       // Let's close the db
       test.done();
     });
@@ -449,10 +438,9 @@ exports.shouldEnsureStrictAccessCollection = function(configuration, test) {
  */
 exports.shouldPerformStrictCreateCollection = function(configuration, test) {
   var error_client = configuration.db();
-  var Collection = configuration.getMongoPackage().Collection;
 
   error_client.createCollection('test_strict_create_collection', function(err, collection) {
-    test.ok(collection instanceof Collection);
+    test.ok(collection.count);
 
     // Creating an existing collection should fail
     error_client.createCollection('test_strict_create_collection', {strict: true}, function(err, collection) {
@@ -461,7 +449,7 @@ exports.shouldPerformStrictCreateCollection = function(configuration, test) {
 
       // Switch out of strict mode and try to re-create collection
       error_client.createCollection('test_strict_create_collection', {strict: false}, function(err, collection) {
-        test.ok(collection instanceof Collection);
+        test.ok(collection.count);
 
         // Let's close the db
         test.done();
@@ -753,12 +741,11 @@ exports.shouldCorrectlyUpdateWithNoDocs = function(configuration, test) {
  * @_function update
  */
 exports.shouldCorrectlyUpdateASimpleDocument = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Get a collection
     db.collection('update_a_simple_document', function(err, collection) {
@@ -795,12 +782,11 @@ exports.shouldCorrectlyUpdateASimpleDocument = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUpsertASimpleDocument = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Get a collection
     db.collection('update_a_simple_document_upsert', function(err, collection) {
@@ -832,12 +818,11 @@ exports.shouldCorrectlyUpsertASimpleDocument = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUpdateMultipleDocuments = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Get a collection
     db.collection('update_a_simple_document_multi', function(err, collection) {
@@ -876,12 +861,11 @@ exports.shouldCorrectlyUpdateMultipleDocuments = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyHandleDistinctIndexes = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Crete the collection for the distinct example
     db.createCollection('simple_key_based_distinct', function(err, collection) {
@@ -916,12 +900,11 @@ exports.shouldCorrectlyHandleDistinctIndexes = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyHandleDistinctIndexesWithSubQueryFilter = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Crete the collection for the distinct example
     db.createCollection('simple_key_based_distinct_sub_query_filter', function(err, collection) {
@@ -951,12 +934,11 @@ exports.shouldCorrectlyHandleDistinctIndexesWithSubQueryFilter = function(config
  * @ignore
  */
 exports.shouldCorrectlyDoSimpleCountExamples = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Crete the collection for the distinct example
     db.createCollection('simple_count_example', function(err, collection) {
@@ -1125,12 +1107,11 @@ exports.shouldPeformCollectionRemoveWithNoCallback = function(configuration, tes
  * @ignore
  */
 exports.shouldCorrectlyRetriveACollectionsIndexes = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Crete the collection for the distinct example
     db.createCollection('simple_key_based_distinct', function(err, collection) {
@@ -1165,12 +1146,11 @@ exports.shouldCorrectlyRetriveACollectionsIndexes = function(configuration, test
  * @ignore
  */
 exports.shouldCorrectlyReturnACollectionsStats = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Crete the collection for the distinct example
     db.createCollection('collection_stats_test', function(err, collection) {
@@ -1356,7 +1336,6 @@ exports.shouldCorrectlyReadBackDocumentWithNull = function(configuration, test) 
  * @ignore
  */
 exports.shouldThrowErrorDueToIllegalUpdate = function(configuration, test) {
-  // console.log("================= hey")
   var client = configuration.db();
 
   client.createCollection('shouldThrowErrorDueToIllegalUpdate', {}, function(err, coll) {

@@ -162,12 +162,12 @@ exports.shouldCorrectlyOverwriteFile = function(configuration, test) {
  */
 exports.shouldCorrectlySeekWithBuffer = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+    
     // Create a file and open it
     var gridStore = new GridStore(db, "test_gs_seek_with_buffer", "w");
     gridStore.open(function(err, gridStore) {
@@ -356,10 +356,12 @@ exports.shouldCorrectlySeekWithString = function(configuration, test) {
  */
 exports.shouldCorrectlySeekAcrossChunks = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a new file
     var gridStore = new GridStore(db, "test_gs_seek_across_chunks", "w");
     // Open the file
@@ -403,30 +405,33 @@ exports.shouldCorrectlySeekAcrossChunks = function(configuration, test) {
 exports.shouldCorrectlyAppendToFile = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var fs_client = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  fs_client.open(function(err, fs_client) {
-    fs_client.dropDatabase(function(err, done) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.dropDatabase(function(err, done) {
       var id = new ObjectID();
 
-      var gridStore = new GridStore(fs_client, "test_gs_append", "w");
+      var gridStore = new GridStore(db, "test_gs_append", "w");
       gridStore.open(function(err, gridStore) {
         gridStore.write("hello, world!", function(err, gridStore) {
           gridStore.close(function(err, result) {
 
-            var gridStore2 = new GridStore(fs_client, "test_gs_append", "w+");
+            var gridStore2 = new GridStore(db, "test_gs_append", "w+");
             gridStore2.open(function(err, gridStore) {
               gridStore2.write(" how are you?", function(err, gridStore) {
                 gridStore2.close(function(err, result) {
 
-                  fs_client.collection('fs.chunks', function(err, collection) {
+                  db.collection('fs.chunks', function(err, collection) {
                     collection.count(function(err, count) {
                       test.equal(1, count);
 
-                      GridStore.read(fs_client, 'test_gs_append', function(err, data) {
+                      GridStore.read(db, 'test_gs_append', function(err, data) {
                         test.equal("hello, world! how are you?", data.toString('ascii'));
 
-                        fs_client.close();
+                        db.close();
                         test.done();
                       });
                     });
@@ -451,12 +456,12 @@ exports.shouldCorrectlyAppendToFile = function(configuration, test) {
 exports.shouldCorrectlyRewingAndTruncateOnWrite = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+    
     // Our file ID
     var fileId = new ObjectID();
 
@@ -508,25 +513,28 @@ exports.shouldCorrectlyRewingAndTruncateOnWrite = function(configuration, test) 
  */
 exports.shouldCorrectlySaveEmptyFile = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var fs_client = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  fs_client.open(function(err, fs_client) {
-    fs_client.dropDatabase(function(err, done) {
-      var gridStore = new GridStore(fs_client, "test_gs_save_empty_file", "w");
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.dropDatabase(function(err, done) {
+      var gridStore = new GridStore(db, "test_gs_save_empty_file", "w");
       gridStore.open(function(err, gridStore) {
         gridStore.write("", function(err, gridStore) {
           gridStore.close(function(err, result) {
-            fs_client.collection('fs.files', function(err, collection) {
+            db.collection('fs.files', function(err, collection) {
               collection.count(function(err, count) {
                 test.equal(1, count);
               });
             });
 
-            fs_client.collection('fs.chunks', function(err, collection) {
+            db.collection('fs.chunks', function(err, collection) {
               collection.count(function(err, count) {
                 test.equal(0, count);
 
-                fs_client.close();
+                db.close();
                 test.done();
               });
             });
@@ -546,13 +554,12 @@ exports.shouldCorrectlySaveEmptyFile = function(configuration, test) {
  */
 exports.shouldCorrectlyDetectEOF = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Open the file in write mode
     var gridStore = new GridStore(db, 'test_gs_empty_file_eof', "w");
     gridStore.open(function(err, gridStore) {
@@ -590,7 +597,7 @@ exports.shouldEnsureThatChunkSizeCannotBeChangedDuringRead = function(configurat
         var gridStore2 = new GridStore(client, "test_gs_cannot_change_chunk_size_on_read", "r");
         gridStore2.open(function(err, gridStore) {
           gridStore.chunkSize = 42;
-          test.equal(Chunk.DEFAULT_CHUNK_SIZE, gridStore.chunkSize);
+          test.equal(GridStore.DEFAULT_CHUNK_SIZE, gridStore.chunkSize);
           test.done();
         });
       });
@@ -610,7 +617,7 @@ exports.shouldEnsureChunkSizeCannotChangeAfterDataHasBeenWritten = function(conf
   gridStore.open(function(err, gridStore) {
     gridStore.write("hello, world!", function(err, gridStore) {
       gridStore.chunkSize = 42;
-      test.equal(Chunk.DEFAULT_CHUNK_SIZE, gridStore.chunkSize);
+      test.equal(GridStore.DEFAULT_CHUNK_SIZE, gridStore.chunkSize);
       test.done();
     });
   });
@@ -908,12 +915,12 @@ exports.shouldNotThrowErrorOnClose = function(configuration, test) {
  */
 exports.shouldCorrectlyExecuteGridstoreTell = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+    
     // Create a new file
     var gridStore = new GridStore(db, "test_gs_tell", "w");
     // Open the file
@@ -956,12 +963,12 @@ exports.shouldCorrectlyExecuteGridstoreTell = function(configuration, test) {
  */
 exports.shouldCorrectlyRetrieveSingleCharacterUsingGetC = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+    
     // Create a file and open it
     var gridStore = new GridStore(db, "test_gs_getc_file", "w");
     gridStore.open(function(err, gridStore) {
@@ -1027,12 +1034,12 @@ exports.shouldNotThrowErrorOnClose = function(configuration, test) {
 exports.shouldCorrectlyRetrieveSingleCharacterUsingGetC = function(configuration, test) {
   var GridStore = configuration.getMongoPackage().GridStore
     , ObjectID = configuration.getMongoPackage().ObjectID;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+    
     // Create a file and open it
     var gridStore = new GridStore(db, new ObjectID(), "test_gs_getc_file", "w");
     gridStore.open(function(err, gridStore) {

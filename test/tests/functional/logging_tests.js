@@ -17,9 +17,8 @@ exports.shouldCorrectlyLogContent = function(configuration, test) {
     }
   }
       
-  var automatic_connect_client = configuration.newDbInstance({w:0, retryMiliSeconds:50, logger:logger}, {poolSize:1});
-  automatic_connect_client.open(function(err, automatic_connect_client) {
-    automatic_connect_client.close();
+  configuration.connect("w=1&maxPoolSize=1", {db: {logger: logger}}, function(err, db) {
+    db.close();
     test.equal(true, loggedOutput);
     test.done();
   });    

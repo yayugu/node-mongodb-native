@@ -4,9 +4,8 @@
  * 
  * @ignore
  */
-exports.shouldCorrectlyCallValidateCollectionUsingAuthenticatedMode = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
-  db.open(function(err, db) {
+exports.shouldCorrectlyCallValidateCollectionUsingAuthenticatedMode = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
     var collection = db.collection('shouldCorrectlyCallValidateCollectionUsingAuthenticatedMode');
     collection.insert({'a':1}, {w: 1}, function(err, doc) {
       var adminDb = db.admin();
@@ -42,11 +41,13 @@ exports.shouldCorrectlyCallValidateCollectionUsingAuthenticatedMode = function(c
  * @_function authenticate
  * @ignore
  */
-exports.shouldCorrectlyAuthenticate = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+exports.shouldCorrectlyAuthenticate = function(configuration, test) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  db.open(function(err, db) {
+    
     // Grab a collection object
     var collection = db.collection('test');
 
@@ -84,11 +85,11 @@ exports.shouldCorrectlyAuthenticate = function(configure, test) {
  * @_function admin
  * @ignore
  */
-exports.accessAdminLevelOperations = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+exports.accessAdminLevelOperations = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin()
@@ -107,13 +108,12 @@ exports.accessAdminLevelOperations = function(configure, test) {
  * @_function buildInfo
  * @ignore
  */
-exports.shouldCorrectlyRetrieveBuildInfo = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyRetrieveBuildInfo = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -149,13 +149,12 @@ exports.shouldCorrectlyRetrieveBuildInfo = function(configure, test) {
  * @_function command
  * @ignore
  */
-exports.shouldCorrectlyRetrieveBuildInfoUsingCommand = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyRetrieveBuildInfoUsingCommand = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -191,13 +190,12 @@ exports.shouldCorrectlyRetrieveBuildInfoUsingCommand = function(configure, test)
  * @_function profilingLevel
  * @ignore
  */
-exports.shouldCorrectlySetDefaultProfilingLevel = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlySetDefaultProfilingLevel = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
     
     // Grab a collection object
     var collection = db.collection('test');
@@ -239,14 +237,13 @@ exports.shouldCorrectlySetDefaultProfilingLevel = function(configure, test) {
  * @_class admin
  * @_function setProfilingLevel
  */ 
-exports.shouldCorrectlyChangeProfilingLevel = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyChangeProfilingLevel = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
-    
+
     // Grab a collection object
     var collection = db.collection('test');
 
@@ -316,13 +313,12 @@ exports.shouldCorrectlyChangeProfilingLevel = function(configure, test) {
  * @_class admin
  * @_function profilingInfo
  */ 
-exports.shouldCorrectlySetAndExtractProfilingInfo = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlySetAndExtractProfilingInfo = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Grab a collection object
     var collection = db.collection('test');
@@ -380,13 +376,12 @@ exports.shouldCorrectlySetAndExtractProfilingInfo = function(configure, test) {
  * @_class admin
  * @_function validateCollection
  */
-exports.shouldCorrectlyCallValidateCollection = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
-  
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+exports.shouldCorrectlyCallValidateCollection = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Grab a collection object
     var collection = db.collection('test');
@@ -434,13 +429,12 @@ exports.shouldCorrectlyCallValidateCollection = function(configure, test) {
  * @_class admin
  * @_function ping
  */
-exports.shouldCorrectlyPingTheMongoDbInstance = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyPingTheMongoDbInstance = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -475,13 +469,12 @@ exports.shouldCorrectlyPingTheMongoDbInstance = function(configure, test) {
  * @_class admin
  * @_function logout
  */
-exports.shouldCorrectlyUseLogoutFunction = function(configure, test) {  
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyUseLogoutFunction = function(configuration, test) {  
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -517,13 +510,12 @@ exports.shouldCorrectlyUseLogoutFunction = function(configure, test) {
  * @_class admin
  * @_function addUser
  */
-exports.shouldCorrectlyAddAUserToAdminDb = function(configure, test) {  
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyAddAUserToAdminDb = function(configuration, test) {  
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -552,13 +544,12 @@ exports.shouldCorrectlyAddAUserToAdminDb = function(configure, test) {
  * @_class admin
  * @_function removeUser
  */
-exports.shouldCorrectlyAddAUserAndRemoveItFromAdminDb = function(configure, test) {  
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyAddAUserAndRemoveItFromAdminDb = function(configuration, test) {  
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -596,13 +587,12 @@ exports.shouldCorrectlyAddAUserAndRemoveItFromAdminDb = function(configure, test
  * @_class admin
  * @_function listDatabases
  */
-exports.shouldCorrectlyListAllAvailableDatabases = function(configure, test) {  
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyListAllAvailableDatabases = function(configuration, test) {  
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Use the admin database for the operation
     var adminDb = db.admin();
@@ -626,13 +616,12 @@ exports.shouldCorrectlyListAllAvailableDatabases = function(configure, test) {
  * @_function serverStatus
  * @ignore
  */
-exports.shouldCorrectlyRetrieveServerInfo = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyRetrieveServerInfo = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Grab a collection object
     var collection = db.collection('test');
@@ -676,13 +665,12 @@ exports.shouldCorrectlyRetrieveServerInfo = function(configure, test) {
  * @_function replSetGetStatus
  * @ignore
  */
-exports.shouldCorrectlyRetrieveReplSetGetStatus = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+exports.shouldCorrectlyRetrieveReplSetGetStatus = function(configuration, test) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
 
     // Grab a collection object
     var collection = db.collection('test');

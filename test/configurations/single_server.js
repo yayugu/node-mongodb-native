@@ -3,7 +3,9 @@ var Configuration = require('integra').Configuration
   , ParallelRunner = require('integra').ParallelRunner
   , mongodb = require('../../')
   , fs = require('fs')
-  , Db = mongodb.Db
+  , format = require('util').format
+  , Db = mongodb.Db  
+  , MongoClient = mongodb.MongoClient
   , Server = mongodb.Server
   , ReplSet = mongodb.ReplSet
   , ServerManager = require('../../test/tools/server_manager').ServerManager
@@ -82,22 +84,41 @@ var single_server_config = function(options) {
       return mongodb;
     }
 
-    this.newDbInstanceWithDomainSocket = function(host, db_options, server_options) {
-      var db = new Db('integration_tests', new Server(host, server_options), db_options);
-      dbs.push(db);
-      return db;
+    // this.newDbInstanceWithDomainSocket = function(host, db_options, server_options) {
+    //   var db = new Db('integration_tests', new Server(host, server_options), db_options);
+    //   dbs.push(db);
+    //   return db;
+    // }
+
+    // this.newDbInstanceWithDomainSocketAndPort = function(host, port, db_options, server_options) {
+    //   var db = new Db('integration_tests', new Server(host, port, server_options), db_options);
+    //   dbs.push(db);
+    //   return db;
+    // }
+
+    // this.newDbInstance = function(db_options, server_options) {
+    //   var db = new Db('integration_tests', new Server("127.0.0.1", 27017, server_options), db_options);
+    //   dbs.push(db);
+    //   return db;
+    // }
+
+    this.connect = function(url_options, options, callback) {
+      if(typeof options == 'function') {
+        callback = options;
+        options = {};
+      }
+
+      var url = format("mongodb://127.0.0.1/integration_tests?%s", url_options);
+      MongoClient.connect(url, options, callback);
     }
 
-    this.newDbInstanceWithDomainSocketAndPort = function(host, port, db_options, server_options) {
-      var db = new Db('integration_tests', new Server(host, port, server_options), db_options);
-      dbs.push(db);
-      return db;
-    }
-
-    this.newDbInstance = function(db_options, server_options) {
-      var db = new Db('integration_tests', new Server("127.0.0.1", 27017, server_options), db_options);
-      dbs.push(db);
-      return db;
+    this.connectWithDomain = function(socket, url_options, options, callback) {
+      if(typeof options == 'function') {
+        callback = options;
+        options = {};
+      }
+      var url = format("mongodb://%s/integration_tests?%s", socket, url_options);
+      MongoClient.connect(url, options, callback);
     }
 
     // Returns a db

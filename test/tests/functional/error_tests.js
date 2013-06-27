@@ -76,7 +76,7 @@ exports.shouldCorrectlyExecuteLastStatus = function(configuration, test) {
   // Open the db
   error_client.open(function(err, client) {
     var collection = client.collection('test_last_status');
-    test.ok(collection instanceof Collection);
+    test.ok(collection.count);
     test.equal('test_last_status', collection.collectionName);
 
     // Get the collection

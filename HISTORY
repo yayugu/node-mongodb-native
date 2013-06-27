@@ -1,3 +1,10 @@
+2.0.0
+-----------------
+- Removed Collection, Command, BaseCommand, Chunk, Admin from index.js
+- Removed DEFAULT_CHUNK_SIZE from Chunk and moved to Gridstore
+- Removed Db.connect (use MongoClient.connect instead)
+
+
 1.3.10 2013-06-17
 -----------------
 - Guard against possible undefined in server::canCheckoutWriter (Issue #992, https://github.com/willyaranda)

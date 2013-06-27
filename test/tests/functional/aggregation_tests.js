@@ -6,12 +6,12 @@
  * @ignore
  */
 exports.shouldCorrectlyExecuteSimpleAggregationPipelineUsingArray = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+  configure.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     // Some docs for insertion
     var docs = [{
         title : "this is my title", author : "bob", posted : new Date() ,
@@ -68,12 +68,12 @@ exports.shouldCorrectlyExecuteSimpleAggregationPipelineUsingArray = function(con
  * @ignore
  */
 exports.shouldFailWhenExecutingSimpleAggregationPipelineUsingArgumentsNotAnArray = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+  configure.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     // Some docs for insertion
     var docs = [{
         title : "this is my title", author : "bob", posted : new Date() ,
@@ -130,12 +130,12 @@ exports.shouldFailWhenExecutingSimpleAggregationPipelineUsingArgumentsNotAnArray
  * @ignore
  */
 exports.shouldFailWhenExecutingSimpleAggregationPipelineUsingArgumentsUsingSingleObject = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+  configure.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     // Some docs for insertion
     var docs = [{
         title : "this is my title", author : "bob", posted : new Date() ,
@@ -230,7 +230,7 @@ exports.shouldCorrectlyFailAndReturnError = function(configure, test) {
  * @ignore
  */
 exports.shouldCorrectlyPassReadPreference = function(configure, test) {
-  var db = configure.newDbInstance({w:1}, {poolSize:1});
+  var db = configure.db();
 
   // Some docs for insertion
   var docs = [{
