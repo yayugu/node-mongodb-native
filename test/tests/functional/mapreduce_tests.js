@@ -6,12 +6,11 @@
  */
 exports.shouldCorrectlyExecuteGroupFunction = function(configuration, test) {
   var Code = configuration.getMongoPackage().Code;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection
     db.createCollection('test_group', function(err, collection) {
@@ -152,12 +151,11 @@ exports.shouldCorrectlyExecuteGroupFunctionWithFinalizeFunction = function(confi
  * @_function mapReduce
  */
 exports.shouldPerformSimpleMapReduceFunctions = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection
     db.createCollection('test_map_reduce_functions', function(err, collection) {
@@ -197,12 +195,11 @@ exports.shouldPerformSimpleMapReduceFunctions = function(configuration, test) {
  * @_function mapReduce
  */
 exports.shouldPerformMapReduceFunctionInline = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Parse version of server if available
     db.admin().serverInfo(function(err, result){
@@ -250,12 +247,11 @@ exports.shouldPerformMapReduceFunctionInline = function(configuration, test) {
 */
 exports.shouldPerformMapReduceInContext = function(configuration, test) {
   var Code = configuration.getMongoPackage().Code;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a test collection
     db.createCollection('test_map_reduce_functions_scope', function(err, collection) {
@@ -482,10 +478,11 @@ exports.shouldHandleMapReduceErrors = function(configuration, test) {
 * @ignore
 */
 exports.shouldSaveDataToDifferentDbFromMapreduce = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
 
     // Create a test collection
     db.createCollection('test_map_reduce_functions', function(err, collection) {

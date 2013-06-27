@@ -2,54 +2,56 @@
  * @ignore
  */
 exports.shouldCorrectlyRetrieveErrorMessagesFromServer = function(configuration, test) {    
-  if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  // Just run with one connection in the pool
-  var error_client = configuration.newDbInstance({w:1}, {poolSize:1});
-  // Open the db
-  error_client.open(function(err, error_client) {
-    error_client.resetErrorHistory(function() {
-      error_client.error(function(err, documents) {
+  if(configuration.db().serverConfig.secondaries) return test.done();
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.resetErrorHistory(function() {
+      db.error(function(err, documents) {
         test.equal(true, documents[0].ok);
         test.equal(0, documents[0].n);
 
         // Force error on server
-        error_client.executeDbCommand({forceerror: 1}, function(err, r) {
+        db.executeDbCommand({forceerror: 1}, function(err, r) {
           test.equal(0, r.documents[0].ok);
           test.ok(r.documents[0].errmsg.length > 0);
 
           // Check for previous errors
-          error_client.previousErrors(function(err, documents) {
+          db.previousErrors(function(err, documents) {
             test.equal(true, documents[0].ok);
             test.equal(1, documents[0].nPrev);
             test.equal("forced error", documents[0].err);
 
             // Check for the last error
-            error_client.error(function(err, documents) {
+            db.error(function(err, documents) {
               test.equal("forced error", documents[0].err);
 
               // Force another error
-              var collection = error_client.collection('test_error_collection');
+              var collection = db.collection('test_error_collection');
               collection.findOne({name:"Fred"}, function(err, document) {
                 
                 // Check that we have two previous errors
-                error_client.previousErrors(function(err, documents) {
+                db.previousErrors(function(err, documents) {
                   test.equal(true, documents[0].ok);
                   test.equal(2, documents[0].nPrev);
                   test.equal("forced error", documents[0].err);
 
-                  error_client.resetErrorHistory(function() {
-                    error_client.previousErrors(function(err, documents) {
+                  db.resetErrorHistory(function() {
+                    db.previousErrors(function(err, documents) {
                       test.equal(true, documents[0].ok);
                       test.equal(-1, documents[0].nPrev);
 
-                      error_client.error(function(err, documents) {                            
+                      db.error(function(err, documents) {                            
                         test.equal(true, documents[0].ok);
                         test.equal(0, documents[0].n);
 
                         // Let's close the db
-                        error_client.close();
+                        db.close();
 
-                        error_client.error(function(err, documents) {
+                        db.error(function(err, documents) {
                           test.ok(err instanceof Error);
                           test.equal('Connection was destroyed by application', err.message);
                           test.done();
@@ -71,16 +73,18 @@ exports.shouldCorrectlyRetrieveErrorMessagesFromServer = function(configuration,
 exports.shouldCorrectlyExecuteLastStatus = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
   var Collection = configuration.getMongoPackage().Collection;
-  // Just run with one connection in the pool
-  var error_client = configuration.newDbInstance({w:0}, {poolSize:1});
-  // Open the db
-  error_client.open(function(err, client) {
-    var collection = client.collection('test_last_status');
+
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    var collection = db.collection('test_last_status');
     test.ok(collection.count);
     test.equal('test_last_status', collection.collectionName);
 
     // Get the collection
-    var collection = client.collection('test_last_status');
+    var collection = db.collection('test_last_status');
     // Remove all the elements of the collection
     collection.remove(function(err, result) {          
       // Check update of a document
@@ -91,12 +95,12 @@ exports.shouldCorrectlyExecuteLastStatus = function(configuration, test) {
         // Update the record
         collection.update({i:1}, {"$set":{i:2}}, function(err, result) {
           // Check for the last message from the server
-          client.lastStatus(function(err, status) {
+          db.lastStatus(function(err, status) {
             test.equal(true, status[0].ok);
             test.equal(true, status[0].updatedExisting);
             // Check for failed update of document
             collection.update({i:1}, {"$set":{i:500}}, function(err, result) {
-              client.lastStatus(function(err, status) {
+              db.lastStatus(function(err, status) {
                 test.equal(true, status[0].ok);
                 test.equal(false, status[0].updatedExisting);
 
@@ -111,7 +115,7 @@ exports.shouldCorrectlyExecuteLastStatus = function(configuration, test) {
                     test.equal(0, result);
 
                     // Let's close the db
-                    error_client.close();
+                    db.close();
                     // Let's close the db
                     test.done();
                   });
@@ -163,17 +167,17 @@ exports.shouldFailInsertDueToUniqueIndexStrict = function(configuration, test) {
 
 exports['safe mode should pass the disconnected error to the callback'] = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var error_client = configuration.newDbInstance({w:0}, {poolSize:1});
   var name = 'test_safe_mode_when_disconnected';
-  error_client.open(function(err, error_client) {
+
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
     test.ok(err == null);
-    error_client.resetErrorHistory(function() {
-      error_client.dropCollection(name, function() {
+    db.resetErrorHistory(function() {
+      db.dropCollection(name, function() {
         
-        var collection = error_client.collection(name);        
+        var collection = db.collection(name);        
         collection.insert({ inserted: true }, { safe: true }, function (err) {
           test.ok(err == null);
-          error_client.close();
+          db.close();
 
           collection.insert({ works: true }, { safe: true }, function (err) {
             test.ok(err instanceof Error);

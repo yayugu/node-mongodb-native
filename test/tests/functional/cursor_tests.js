@@ -8,12 +8,11 @@ var Step = require('step')
  * @_function toArray
  */
 exports.shouldCorrectlyExecuteToArray = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection to hold our documents
     db.createCollection('test_array', function(err, collection) {
@@ -71,12 +70,11 @@ exports.shouldCorrectlyExecuteToArrayAndFailOnFurtherCursorAccess = function(con
  * @ignore
  */
 exports.shouldCorrectlyFailToArrayDueToFinishedEachOperation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('test_to_a_after_each', function(err, collection) {
@@ -1138,12 +1136,12 @@ exports.shouldCorrectlyInsert5000RecordsWithDateAndSortCorrectlyWithIndex = func
  * @_function rewind
  */
 exports['Should correctly rewind and restart cursor'] = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     var docs = [];
 
     // Insert 100 documents with some data
@@ -1395,11 +1393,11 @@ exports['destroying a stream stops it'] = function(configuration, test) {
  */
 exports['cursor stream errors']= function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  client.open(function(err, db_p) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
     test.equal(null, err);
 
-    client.createCollection('cursor_stream_errors', function(err, collection) {
+    db.createCollection('cursor_stream_errors', function(err, collection) {
       test.equal(null, err);
 
       var docs = [];
@@ -1417,7 +1415,7 @@ exports['cursor stream errors']= function(configuration, test) {
 
         stream.on('data', function (doc) {
           if (++i === 5) {
-            client.close();
+            db.close();
           }
         });
 
@@ -1504,12 +1502,11 @@ exports['cursor stream pipe']= function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUseCursorCountFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Creat collection
     db.createCollection('cursor_count_collection', function(err, collection) {
@@ -1541,12 +1538,11 @@ exports.shouldCorrectlyUseCursorCountFunction = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPeformSimpleSorts = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_sort_collection', function(err, collection) {
@@ -1584,12 +1580,11 @@ exports.shouldCorrectlyPeformSimpleSorts = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPeformLimitOnCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_limit_collection', function(err, collection) {
@@ -1621,12 +1616,11 @@ exports.shouldCorrectlyPeformLimitOnCursor = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPeformSkipOnCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_skip_collection', function(err, collection) {
@@ -1659,12 +1653,11 @@ exports.shouldCorrectlyPeformSkipOnCursor = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPeformBatchSizeOnCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_batch_size_collection', function(err, collection) {
@@ -1696,12 +1689,11 @@ exports.shouldCorrectlyPeformBatchSizeOnCursor = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPeformNextObjectOnCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_next_object_collection', function(err, collection) {
@@ -1733,12 +1725,11 @@ exports.shouldCorrectlyPeformNextObjectOnCursor = function(configuration, test) 
  * @ignore
  */
 exports.shouldCorrectlyPeformSimpleExplainCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('simple_explain_collection', function(err, collection) {
@@ -1769,12 +1760,11 @@ exports.shouldCorrectlyPeformSimpleExplainCursor = function(configuration, test)
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheStreamFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -1814,12 +1804,11 @@ exports.shouldStreamDocumentsUsingTheStreamFunction = function(configuration, te
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheIsCloseFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -1860,9 +1849,11 @@ exports.shouldStreamDocumentsUsingTheIsCloseFunction = function(configuration, t
  */
 exports.shouldCloseDeadTailableCursors = function(configuration, test) {
   // http://www.mongodb.org/display/DOCS/Tailable+Cursors
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
 
     var options = { capped: true, size: 8 };
     db.createCollection('test_if_dead_tailable_cursors_close', options, function(err, collection) {
@@ -1924,9 +1915,12 @@ exports.shouldCloseDeadTailableCursors = function(configuration, test) {
  */
 exports.shouldAwaitData = function(configuration, test) {
   // http://www.mongodb.org/display/DOCS/Tailable+Cursors
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     var options = { capped: true, size: 8};
     db.createCollection('should_await_data', options, function(err, collection) {
       collection.insert({a:1}, {w:1}, function(err, result) {
@@ -1996,10 +1990,11 @@ exports.shouldCorrectExecuteExplainHonoringLimit = function(configuration, test)
  * @ignore
  */
 exports.shouldCorrectlyPerformResumeOnCursorStreamWithNoDuplicates = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
 
     // Create a lot of documents to insert
     var dup_check = {};
@@ -2038,10 +2033,12 @@ exports.shouldCorrectlyPerformResumeOnCursorStreamWithNoDuplicates = function(co
  * @ignore
  */
 exports.shouldFailToSetReadPreferenceOnCursor = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     try {
       db.collection('shouldFailToSetReadPreferenceOnCursor').find().setReadPreference("notsecondary");      
       test.ok(false);
@@ -2201,12 +2198,11 @@ exports.shouldFailToTailANormalCollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheCloseFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -2246,26 +2242,21 @@ exports.shouldStreamDocumentsUsingTheCloseFunction = function(configuration, tes
  * @api private
  */
 exports.shouldNotHangOnTailableCursor = function(configuration, test) {
-  // var client = configuration.db();
   var docs = [];
   var totaldocs = 2000;
   for(var i = 0; i < totaldocs; i++) docs.push({a:i, OrderNumber:i});
   var options = { capped: true, size: (1024 * 1024 * 16) };
   var index = 0;
 
-  // this.newDbInstance = function(db_options, server_options) {
-  var client = configuration.newDbInstance({w:1}, {auto_reconnect:true});
-
-  client.open(function(err, client) {
-    client.createCollection('shouldNotHangOnTailableCursor', options, function(err, collection) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+    db.createCollection('shouldNotHangOnTailableCursor', options, function(err, collection) {
       collection.insert(docs, {w:1}, function(err, ids) {    
         var cursor = collection.find({}, {tailable:true});
         cursor.each(function(err, doc) {
           index += 1;
-          // console.dir("============================")
 
           if(err) {            
-            client.close();
+            db.close();
             
             // Ensure we have a server up and running
             return configuration.start(function() {
@@ -2278,14 +2269,8 @@ exports.shouldNotHangOnTailableCursor = function(configuration, test) {
           if(index == 10) {
             configuration.restartNoEnsureUp(function(err) {}); 
           }
-          // test.ok(err instanceof Error);
-          // test.done();
         });
       });
-
-      // process.nextTick(function() {
-      //   configuration.restart(function(err) {});
-      // })
     });
   });
 }

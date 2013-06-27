@@ -6,13 +6,12 @@
  * @ignore
  */
 exports.shouldRemoveAllDocumentsNoSafe = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
-    
+
     // Fetch a collection to insert document into
     db.collection("remove_all_documents_no_safe", function(err, collection) {
       
@@ -44,13 +43,12 @@ exports.shouldRemoveAllDocumentsNoSafe = function(configuration, test) {
  * @ignore
  */
 exports.shouldRemoveSubsetOfDocumentsSafeMode = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db  
-  db.open(function(err, db) {
-    
+
     // Fetch a collection to insert document into
     db.collection("remove_subset_of_documents_safe", function(err, collection) {
       

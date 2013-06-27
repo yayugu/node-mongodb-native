@@ -1092,8 +1092,7 @@ exports.shouldFailDueToInsertBeingBiggerThanMaxDocumentSizeAllowed = function(co
 exports.shouldFailDueToMessageBeingBiggerThanMaxMessageSize = function(configuration, test) {
   var Binary = configuration.getMongoPackage().Binary;
 
-  var db = configuration.newDbInstance({w:1}, {disableDriverBSONSizeCheck:true})
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", {server: {disableDriverBSONSizeCheck: true}}, function(err, db) {
     var binary = new Binary(new Buffer(db.serverConfig.checkoutWriter().maxBsonSize));
     var collection = db.collection('shouldFailDueToInsertBeingBiggerThanMaxDocumentSizeAllowed');
 

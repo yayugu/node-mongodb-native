@@ -86,6 +86,7 @@ exports.shouldCorrectlyAuthenticate = function(configuration, test) {
  * @ignore
  */
 exports.accessAdminLevelOperations = function(configuration, test) {
+
   configuration.connect("w=1&maxPoolSize=1", function(err, db) {
   // DOC_LINE // Connect to the server using MongoClient
   // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {

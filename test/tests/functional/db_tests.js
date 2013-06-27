@@ -56,12 +56,16 @@ exports.shouldCorrectlyHandleIllegalDbNames = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyPerformAutomaticConnect = function(configuration, test) {
-  var automatic_connect_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:true});
-  automatic_connect_client.open(function(err, automatic_connect_client) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     // Listener for closing event
     var closeListener = function(has_error) {
       // Let's insert a document
-      var collection = automatic_connect_client.collection('test_object_id_generation.data2');
+      var collection = db.collection('test_object_id_generation.data2');
       // Insert another test document and collect using ObjectId
       collection.insert({"name":"Patty", "age":34}, {w:1}, function(err, ids) {
         test.equal(1, ids.length);
@@ -70,16 +74,16 @@ exports.shouldCorrectlyPerformAutomaticConnect = function(configuration, test) {
         collection.findOne({"name":"Patty"}, function(err, document) {
           test.equal(ids[0]._id.toHexString(), document._id.toHexString());
           // Let's close the db
-          automatic_connect_client.close();
+          db.close();
           test.done();
         });
       });
     };
 
     // Add listener to close event
-    automatic_connect_client.once("close", closeListener);
+    db.once("close", closeListener);
     // Ensure death of server instance
-    automatic_connect_client.serverConfig.connectionPool.openConnections[0].connection.destroy();
+    db.serverConfig.connectionPool.openConnections[0].connection.destroy();
   });
 }
 
@@ -91,12 +95,11 @@ exports.shouldCorrectlyPerformAutomaticConnect = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyFailOnRetryDueToAppCloseOfDb = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Fetch a collection
     var collection = db.collection('shouldCorrectlyFailOnRetryDueToAppCloseOfDb');
@@ -128,12 +131,12 @@ exports.shouldCorrectlyFailOnRetryDueToAppCloseOfDb = function(configuration, te
  */
 exports.shouldCorrectlyExecuteEvalFunctions = function(configuration, test) {
   var Code = configuration.getMongoPackage().Code;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     var numberOfTests = 
 
     // Evaluate a function on the server with the parameter 3 passed in
@@ -208,12 +211,11 @@ exports.shouldCorrectlyExecuteEvalFunctions = function(configuration, test) {
  */
 exports.shouldCorrectlyDefineSystemLevelFunctionAndExecuteFunction = function(configuration, test) {
   var Code = configuration.getMongoPackage().Code;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Clean out the collection
     db.collection("system.js").remove({}, {w:1}, function(err, result) {
@@ -296,12 +298,11 @@ exports.shouldCorrectlyDereferenceDbRef = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyRenameCollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Open a couple of collections
     db.createCollection('test_rename_collection', function(err, collection1) {
@@ -390,12 +391,12 @@ exports.shouldCorrectlyRenameCollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyOpenASimpleDbSingleServerConnection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     db.on('close', test.done.bind(test));
@@ -412,12 +413,12 @@ exports.shouldCorrectlyOpenASimpleDbSingleServerConnection = function(configurat
  * @ignore
  */
 exports.shouldCorrectlyOpenASimpleDbSingleServerConnectionAndCloseWithCallback = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Close the connection with a callback that is optional
@@ -438,12 +439,12 @@ exports.shouldCorrectlyOpenASimpleDbSingleServerConnectionAndCloseWithCallback =
  * @ignore
  */
 exports.shouldCorrectlyRetrieveCollectionInformation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -479,12 +480,12 @@ exports.shouldCorrectlyRetrieveCollectionInformation = function(configuration, t
  * @ignore
  */
 exports.shouldCorrectlyRetrieveCollectionNames = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -516,12 +517,12 @@ exports.shouldCorrectlyRetrieveCollectionNames = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyAccessACollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Grab a collection without a callback no safe mode
@@ -560,12 +561,12 @@ exports.shouldCorrectlyAccessACollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyRetrieveAllCollections = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create the collection
@@ -642,12 +643,12 @@ exports.shouldCorrectlyResaveDBRef = function(configuration, test) {
  */
 exports.shouldCorrectlyDereferenceDbRefExamples = function(configuration, test) {
   var DBRef = configuration.getMongoPackage().DBRef;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Get a second db
@@ -692,12 +693,12 @@ exports.shouldCorrectlyDereferenceDbRefExamples = function(configuration, test) 
  */
 exports.shouldCorrectlyLogoutFromTheDatabase = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Add a user to the database
@@ -730,12 +731,12 @@ exports.shouldCorrectlyLogoutFromTheDatabase = function(configuration, test) {
  */
 exports.shouldCorrectlyAuthenticateAgainstTheDatabase = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Add a user to the database
@@ -763,12 +764,12 @@ exports.shouldCorrectlyAuthenticateAgainstTheDatabase = function(configuration, 
  */
 exports.shouldCorrectlyAddUserToDb = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Add a user to the database
@@ -791,12 +792,12 @@ exports.shouldCorrectlyAddUserToDb = function(configuration, test) {
  */
 exports.shouldCorrectlyAddAndRemoveUser = function(configuration, test) {
   if(configuration.db().serverConfig instanceof configuration.getMongoPackage().ReplSet) return test.done();
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Add a user to the database
@@ -837,12 +838,12 @@ exports.shouldCorrectlyAddAndRemoveUser = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyCreateACollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a capped collection with a maximum of 1000 documents
@@ -869,12 +870,12 @@ exports.shouldCorrectlyCreateACollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyExecuteACommandAgainstTheServer = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Execute ping against the server
@@ -916,12 +917,12 @@ exports.shouldCorrectlyExecuteACommandAgainstTheServer = function(configuration,
  * @ignore
  */
 exports.shouldCorrectlyCreateDropAndVerifyThatCollectionIsGone = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Execute ping against the server
@@ -943,12 +944,12 @@ exports.shouldCorrectlyCreateDropAndVerifyThatCollectionIsGone = function(config
  * @ignore
  */
 exports.shouldCorrectlyRenameACollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -995,12 +996,12 @@ exports.shouldCorrectlyRenameACollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUseLastError = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -1041,12 +1042,12 @@ exports.shouldCorrectlyUseLastError = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUsePreviousError = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -1087,12 +1088,12 @@ exports.shouldCorrectlyUsePreviousError = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyUseResetErrorHistory = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     // Create a collection
@@ -1135,12 +1136,11 @@ exports.shouldCorrectlyUseResetErrorHistory = function(configuration, test) {
  * @_function createIndex
  */
 exports.shouldCreateComplexIndexOnTwoFields = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_complex_index_test', function(err, collection) {
@@ -1184,12 +1184,11 @@ exports.shouldCreateComplexIndexOnTwoFields = function(configuration, test) {
  * @_function ensureIndex
  */
 exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_complex_ensure_index_test', function(err, collection) {
@@ -1233,12 +1232,11 @@ exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
  * @_function cursorInfo
  */
 exports.shouldCorrectlyReturnCursorInformation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('cursor_information_collection', function(err, collection) {
@@ -1280,12 +1278,11 @@ exports.shouldCorrectlyReturnCursorInformation = function(configuration, test) {
  * @_function dropIndex
  */
 exports.shouldCorrectlyCreateAndDropIndex = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('create_and_drop_an_index', function(err, collection) {
@@ -1327,12 +1324,11 @@ exports.shouldCorrectlyCreateAndDropIndex = function(configuration, test) {
  * @_function reIndex
  */
 exports.shouldCorrectlyForceReindexOnCollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('create_and_drop_all_indexes', function(err, collection) {
@@ -1375,12 +1371,11 @@ exports.shouldCorrectlyForceReindexOnCollection = function(configuration, test) 
  * @_function indexInformation
  */
 exports.shouldCorrectlyShowTheResultsFromIndexInformation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_index_information_test', function(err, collection) {
@@ -1423,12 +1418,11 @@ exports.shouldCorrectlyShowTheResultsFromIndexInformation = function(configurati
  * @_function dropDatabase
  */
 exports.shouldCorrectlyDropTheDatabase = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection
     db.createCollection('more_index_information_test', function(err, collection) {
@@ -1475,10 +1469,12 @@ exports.shouldCorrectlyDropTheDatabase = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyGetErrorDroppingNonExistingDb = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     var _db = db.db("nonexistingdb");
     // Let's drop the database
     _db.dropDatabase(function(err, result) {
@@ -1495,10 +1491,12 @@ exports.shouldCorrectlyGetErrorDroppingNonExistingDb = function(configuration, t
  * @ignore
  */
 exports.shouldCorrectlyThrowWhenTryingToReOpenConnection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     try {
       db.open(function(err, db) {
       });
@@ -1540,12 +1538,12 @@ exports.shouldCorrectlyReconnectWhenError = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyRetrieveDbStats = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
+
     test.equal(null, err);
 
     db.stats(function(err, stats) {

@@ -520,14 +520,17 @@ exports.shouldCorrectlyReturnDocumentWithOriginalStructure= function(configurati
  * @ignore
  */
 exports.shouldCorrectlyRetrieveSingleRecord = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('test_should_correctly_retrieve_one_record', function(err, collection) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.createCollection('test_should_correctly_retrieve_one_record', function(err, collection) {
       collection.insert({'a':0}, {w:1}, function(err, r) {
-        p_client.collection('test_should_correctly_retrieve_one_record', function(err, usercollection) {
+        db.collection('test_should_correctly_retrieve_one_record', function(err, usercollection) {
           usercollection.findOne({'a': 0}, function(err, result) {
-            p_client.close();
+            db.close();
 
             test.done();
           });
@@ -930,16 +933,20 @@ exports['Should correctly pass timeout options to cursor'] = function(configurat
  * @ignore
  */
 exports.shouldCorrectlyFindAndModifyDocumentWithDBStrict = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('shouldCorrectlyFindAndModifyDocumentWithDBStrict', function(err, collection) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.createCollection('shouldCorrectlyFindAndModifyDocumentWithDBStrict', function(err, collection) {
       // Test return old document on change
       collection.insert({'a':2, 'b':2}, {w:1}, function(err, doc) {
         // Let's modify the document in place
         collection.findAndModify({'a':2}, [['a', 1]], {'$set':{'b':3}}, {new:true}, function(err, result) {
           test.equal(2, result.a)
           test.equal(3, result.b)
-          p_client.close();
+          db.close();
           test.done();
         })
       });
@@ -975,9 +982,13 @@ exports.shouldCorrectlyFindAndModifyDocumentThatFailsInFirstStep = function(conf
  * @ignore
  */
 exports.shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingDocuments = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingDocuments', function(err, collection) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.createCollection('shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingDocuments', function(err, collection) {
       // Test return old document on change
       collection.insert({'a':2, 'b':2}, function(err, doc) {
 
@@ -985,7 +996,7 @@ exports.shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingD
         collection.findAndModify({'a':2}, [['a', 1]], {'$set':{'b':3}}, {safe:{w:200, wtimeout:1000}}, function(err, result) {
           test.equal(null, result);
           test.ok(err != null);
-          p_client.close();
+          db.close();
           test.done();
         })
       });
@@ -1080,9 +1091,13 @@ exports['Should correctly return record with 64-bit id'] = function(configuratio
  */
 exports['Should Correctly find a Document using findOne excluding _id field'] = function(configuration, test) {
   var ObjectID = configuration.getMongoPackage().ObjectID;
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('Should_Correctly_find_a_Document_using_findOne_excluding__id_field', function(err, collection) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.createCollection('Should_Correctly_find_a_Document_using_findOne_excluding__id_field', function(err, collection) {
       var doc = {_id : new ObjectID(), a:1, c:2}
       // insert doc
       collection.insert(doc, {w:1}, function(err, result) {
@@ -1097,7 +1112,7 @@ exports['Should Correctly find a Document using findOne excluding _id field'] = 
             test.equal(null, item._id);
             test.equal(1, item.a);
             test.equal(2, item.c);
-            p_client.close();
+            db.close();
             test.done();
           })
         })
@@ -1211,9 +1226,13 @@ exports.shouldCorrectlyExecuteFindAndModifyShouldGenerateCorrectBSON = function(
  * @ignore
  */
 exports.shouldCorrectlyExecuteMultipleFindsInParallel = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('tasks', function(err, collection) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
+    db.createCollection('tasks', function(err, collection) {
       var numberOfOperations = 0;
 
       // Test return old document on change
@@ -1223,7 +1242,7 @@ exports.shouldCorrectlyExecuteMultipleFindsInParallel = function(configuration, 
           numberOfOperations = numberOfOperations + 1;
           if(numberOfOperations == 2) {
             test.done();
-            p_client.close();
+            db.close();
           }
         })
 
@@ -1232,7 +1251,7 @@ exports.shouldCorrectlyExecuteMultipleFindsInParallel = function(configuration, 
           numberOfOperations = numberOfOperations + 1;
           if(numberOfOperations == 2) {
             test.done();
-            p_client.close();
+            db.close();
           }
         })
       });
@@ -1268,12 +1287,13 @@ exports.shouldCorrectlyReturnErrorFromMongodbOnFindAndModifyForcedError = functi
  */
 exports.shouldCorrectlyExecuteFindAndModifyUnderConcurrentLoad = function(configuration, test) {
   var ObjectID = configuration.getMongoPackage().ObjectID;
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
   var running = true;
 
-  p_client.open(function(err, p_client) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {    
+    
     // Create a collection
-    p_client.collection("collection1", function(err, collection) {
+    db.collection("collection1", function(err, collection) {
       // Wait a bit and then execute something that will throw a duplicate error
       setTimeout(function() {
         var id = new ObjectID();
@@ -1284,13 +1304,13 @@ exports.shouldCorrectlyExecuteFindAndModifyUnderConcurrentLoad = function(config
           collection.insert({_id:id, a:1}, {w:1}, function(err, result) {
             running = false;
             test.done();
-            p_client.close();
+            db.close();
           });
         });
       }, 200);
     });
 
-    p_client.collection("collection2", function(err, collection) {
+    db.collection("collection2", function(err, collection) {
       // Keep hammering in inserts
       var insert = function() {
         process.nextTick(function() {
@@ -1306,13 +1326,12 @@ exports.shouldCorrectlyExecuteFindAndModifyUnderConcurrentLoad = function(config
  * @ignore
  */
 exports.shouldCorrectlyIterateOverCollection = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
   var numberOfSteps = 0;
 
-  // Open db connection
-  p_client.open(function(err, p_client) {
+
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
     // Create a collection
-    p_client.createCollection('shouldCorrectlyIterateOverCollection', function(err, collection) {
+    db.createCollection('shouldCorrectlyIterateOverCollection', function(err, collection) {
       for(var i = 0; i < 1000; i++) {
         collection.insert({a:1, b:2, c:{d:3, f:'sfdsffffffffffffffffffffffffffffff'}});
       }
@@ -1321,7 +1340,7 @@ exports.shouldCorrectlyIterateOverCollection = function(configuration, test) {
       cursor.count(function(err,count) {
         cursor.each(function(err, obj) {
          if (obj == null) {
-           p_client.close();
+           db.close();
            test.equal(1000, numberOfSteps);
            test.done();
          } else {
@@ -1337,9 +1356,10 @@ exports.shouldCorrectlyIterateOverCollection = function(configuration, test) {
  * @ignore
  */
 exports.shouldCorrectlyErrorOutFindAndModifyOnDuplicateRecord = function(configuration, test) {
-  var p_client = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
-  p_client.open(function(err, p_client) {
-    p_client.createCollection('shouldCorrectlyErrorOutFindAndModifyOnDuplicateRecord', function(err, collection) {
+
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+    
+    db.createCollection('shouldCorrectlyErrorOutFindAndModifyOnDuplicateRecord', function(err, collection) {
       // Test return old document on change
       collection.insert([{'login':'user1'}, {'login':'user2'}], {w:1}, function(err, docs) {
         var id = docs[1]._id;
@@ -1348,7 +1368,7 @@ exports.shouldCorrectlyErrorOutFindAndModifyOnDuplicateRecord = function(configu
           // Attemp to modify document
           collection.findAndModify({_id: id}, [], { $set: {login: 'user1'} }, {}, function(err, user){
             test.ok(err != null);
-            p_client.close();
+            db.close();
             test.done();
           });
         });
@@ -1363,11 +1383,8 @@ exports.shouldCorrectlyErrorOutFindAndModifyOnDuplicateRecord = function(configu
  * @ignore
  */
 exports.shouldPerformSimpleFindInArray = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
     // Create a collection we want to drop later
     db.createCollection('simple_find_in_array', function(err, collection) {
       test.equal(null, err);
@@ -1406,13 +1423,12 @@ exports.shouldPerformSimpleFindInArray = function(configuration, test) {
  * @_function findAndModify
  */
 exports.shouldPerformSimpleFindAndModifyOperations = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_find_and_modify_operations_', function(err, collection) {
       test.equal(null, err);
@@ -1464,13 +1480,12 @@ exports.shouldPerformSimpleFindAndModifyOperations = function(configuration, tes
  * @_function findAndRemove
  */
 exports.shouldPerformSimpleFindAndRemove = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_find_and_modify_operations_', function(err, collection) {
       test.equal(null, err);
@@ -1507,13 +1522,12 @@ exports.shouldPerformSimpleFindAndRemove = function(configuration, test) {
  * @_function find
  */
 exports.shouldPeformASimpleQuery = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_query', function(err, collection) {
       test.equal(null, err);
@@ -1543,13 +1557,12 @@ exports.shouldPeformASimpleQuery = function(configuration, test) {
  * @_function find
  */
 exports.shouldPeformASimpleExplainQuery = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_explain_query', function(err, collection) {
       test.equal(null, err);
@@ -1579,13 +1592,12 @@ exports.shouldPeformASimpleExplainQuery = function(configuration, test) {
  * @_function find
  */
 exports.shouldPeformASimpleLimitSkipQuery = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_limit_skip_query', function(err, collection) {
       test.equal(null, err);
@@ -1611,9 +1623,12 @@ exports.shouldPeformASimpleLimitSkipQuery = function(configuration, test) {
 }
 
 exports.shouldReturnInstanceofErrorWithBadFieldSelection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     test.equal(null, err);
 
     var col = db.collection('bad_field_selection');
@@ -1636,13 +1651,12 @@ exports.shouldReturnInstanceofErrorWithBadFieldSelection = function(configuratio
  * @_function findOne
  */
 exports.shouldPeformASimpleLimitSkipFindOneQuery = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
-
+    
     // Create a collection we want to drop later
     db.createCollection('simple_limit_skip_find_one_query', function(err, collection) {
       test.equal(null, err);
@@ -1670,11 +1684,12 @@ exports.shouldPeformASimpleLimitSkipFindOneQuery = function(configuration, test)
  * A simple query using find and fields
  */
 exports.shouldPeformASimpleLimitSkipFindWithFields = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.createCollection('simple_find_with_fields', function(err, collection) {
       test.equal(null, err);
@@ -1710,11 +1725,12 @@ exports.shouldPeformASimpleLimitSkipFindWithFields = function(configuration, tes
  * A simple query using find and fields
  */
 exports.shouldPeformASimpleLimitSkipFindWithFields2 = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.createCollection('simple_find_with_fields_2', function(err, collection) {
       test.equal(null, err);
@@ -1742,11 +1758,12 @@ exports.shouldPeformASimpleLimitSkipFindWithFields2 = function(configuration, te
  * A simple query with a different batchSize
  */
 exports.shouldPerformQueryWithBatchSizeDifferentToStandard = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.createCollection('shouldPerformQueryWithBatchSizeDifferentToStandard', function(err, collection) {
       test.equal(null, err);
@@ -1777,11 +1794,12 @@ exports.shouldPerformQueryWithBatchSizeDifferentToStandard = function(configurat
  * A simple query with a different batchSize
  */
 exports.shouldQueryCurrentOperation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.collection('$cmd.sys.inprog', function(err, collection) {
       // Peform a simple find and return all the documents
@@ -1798,11 +1816,12 @@ exports.shouldQueryCurrentOperation = function(configuration, test) {
  * A simple query with negative limit
  */
 exports.shouldCorrectlyPerformNegativeLimit = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.collection('shouldCorrectlyPerformNegativeLimit', function(err, collection) {
       var docs = [];
@@ -1830,11 +1849,12 @@ exports.shouldCorrectlyPerformNegativeLimit = function(configuration, test) {
  */
 exports.shouldCorrectlyExecuteExhaustQuery = function(configuration, test) {
   var Binary = configuration.getMongoPackage().Binary;
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
-
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     // Create a collection we want to drop later
     db.collection('shouldCorrectlyExecuteExhaustQuery', function(err, collection) {
       var docs = [];
@@ -1863,10 +1883,12 @@ exports.shouldCorrectlyExecuteExhaustQuery = function(configuration, test) {
 
 exports['Readpreferences should work fine when using a single server instance'] = function(configuration, test) {
   var ReadPreference = configuration.getMongoPackage().ReadPreference;
-  var db = configuration.newDbInstance({w:0, readPreference:ReadPreference.PRIMARY_PREFERRED}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     test.equal(null, err);
 
     var docs = [];
@@ -1896,10 +1918,12 @@ exports['Readpreferences should work fine when using a single server instance'] 
 
 exports['Each should not hang on iterating over no results'] = function(configuration, test) {
   var ReadPreference = configuration.getMongoPackage().ReadPreference;
-  var db = configuration.newDbInstance({w:0, readPreference:ReadPreference.PRIMARY_PREFERRED}, {poolSize:1, auto_reconnect:false});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+    
     test.equal(null, err);
     // Create a collection we want to drop later
     db.collection('noresultAvailableForEachToIterate', function(err, collection) {

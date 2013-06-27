@@ -6,12 +6,11 @@
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheCursorStreamPauseFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -66,12 +65,11 @@ exports.shouldStreamDocumentsUsingTheCursorStreamPauseFunction = function(config
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheCursorStreamResumeFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -129,12 +127,11 @@ exports.shouldStreamDocumentsUsingTheCursorStreamResumeFunction = function(confi
  * @ignore
  */
 exports.shouldStreamDocumentsUsingTheCursorStreamDestroyFunction = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a lot of documents to insert
     var docs = []
@@ -175,10 +172,7 @@ exports.shouldStreamDocumentsWithPauseAndResumeForFetching = function(configurat
     docs.push({'a':i})
   }
 
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
-
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
     db.createCollection('test_streaming_function_with_limit_for_fetching2', function(err, collection) {
 
       collection.insert(docs, {w:1}, function(err, ids) {
@@ -215,10 +209,9 @@ exports.shouldStream10KDocuments = function(configuration, test) {
     docs.push({'a':i, bin: new Binary(new Buffer(256))})
   }
 
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
 
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+
     db.createCollection('test_streaming_function_with_limit_for_fetching_2', function(err, collection) {
 
       collection.insert(docs, {w:1}, function(err, ids) {
@@ -257,10 +250,8 @@ exports.shouldTriggerMassiveAmountOfGetMores = function(configuration, test) {
     docs.push({'a':i, bin: new Binary(new Buffer(256))})
   }
 
-  var db = configuration.newDbInstance({w:0}, {poolSize:1});
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
-  // Establish connection to db
-  db.open(function(err, db) {
     db.createCollection('test_streaming_function_with_limit_for_fetching_3', function(err, collection) {
 
       collection.insert(docs, {w:1}, function(err, ids) {

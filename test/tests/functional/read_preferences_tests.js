@@ -5,9 +5,12 @@ exports['Should correctly apply collection level read Preference to count'] = fu
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -37,9 +40,12 @@ exports['Should correctly apply collection level read Preference to group'] = fu
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -69,9 +75,12 @@ exports['Should correctly apply collection level read Preference to geoNear'] = 
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -101,9 +110,12 @@ exports['Should correctly apply collection level read Preference to geoHaystackS
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -133,9 +145,12 @@ exports['Should correctly apply collection level read Preference to mapReduce'] 
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -170,9 +185,12 @@ exports['Should correctly apply collection level read Preference to aggregate'] 
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});
@@ -217,9 +235,12 @@ exports['Should correctly apply collection level read Preference to stats'] = fu
   var mongo = configuration.getMongoPackage()
     , ReadPreference = mongo.ReadPreference;
 
-  var db = configuration.newDbInstance({w:1}, {poolSize:1});
+  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
 
-  db.open(function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
+  // DOC_START
+
     test.equal(null, err);
     // Set read preference
     var collection = db.collection('read_pref_1', {readPreference:ReadPreference.SECONDARY_PREFERRED});

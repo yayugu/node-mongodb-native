@@ -5,12 +5,11 @@
  * @_function createIndex
  */
 exports.shouldCreateASimpleIndexOnASingleField = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('simple_index_test', function(err, collection) {
@@ -45,12 +44,11 @@ exports.shouldCreateASimpleIndexOnASingleField = function(configuration, test) {
  * @_function createIndex
  */
 exports.shouldCreateComplexIndexOnTwoFields = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_complex_index_test', function(err, collection) {
@@ -94,12 +92,11 @@ exports.shouldCreateComplexIndexOnTwoFields = function(configuration, test) {
  * @_function ensureIndex
  */
 exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_complex_ensure_index_test', function(err, collection) {
@@ -143,12 +140,11 @@ exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
  * @_function indexInformation
  */
 exports.shouldCorrectlyShowTheResultsFromIndexInformation = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('more_index_information_test', function(err, collection) {
@@ -191,12 +187,11 @@ exports.shouldCorrectlyShowTheResultsFromIndexInformation = function(configurati
  * @_function dropIndex
  */
 exports.shouldCorrectlyCreateAndDropIndex = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('create_and_drop_an_index', function(err, collection) {
@@ -238,12 +233,11 @@ exports.shouldCorrectlyCreateAndDropIndex = function(configuration, test) {
  * @_function dropIndexes
  */
 exports.shouldCorrectlyCreateAndDropAllIndex = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('shouldCorrectlyCreateAndDropAllIndex', function(err, collection) {
@@ -291,12 +285,11 @@ exports.shouldCorrectlyCreateAndDropAllIndex = function(configuration, test) {
  * @_function reIndex
  */
 exports.shouldCorrectlyForceReindexOnCollection = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
 
-  // DOC_LINE var db = new Db('test', new Server('locahost', 27017));
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
+  // DOC_LINE // Connect to the server using MongoClient
+  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-  // Establish connection to db
-  db.open(function(err, db) {
 
     // Create a collection we want to drop later
     db.createCollection('shouldCorrectlyForceReindexOnCollection', function(err, collection) {
@@ -724,10 +717,7 @@ exports.shouldThrowDuplicateKeyErrorWhenCreatingIndex = function(configuration, 
  * @ignore
  */
 exports.shouldThrowDuplicateKeyErrorWhenDriverInStrictMode = function(configuration, test) {
-  var db = configuration.newDbInstance({w:0}, {poolSize:1, auto_reconnect:true});
-
-  // Establish connection to db
-  db.open(function(err, db) {
+  configuration.connect("w=0&maxPoolSize=1", function(err, db) {
     db.createCollection('shouldThrowDuplicateKeyErrorWhenDriverInStrictMode', function(err, collection) {
       collection.insert([{a:1}, {a:1}], {w:1}, function(err, result) {
         test.equal(null, err);
