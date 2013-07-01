@@ -51,6 +51,7 @@ module.exports = function(configurations) {
         , '/test/tests/functional/collection_tests.js'
         , '/test/tests/functional/db_tests.js'
         , '/test/tests/functional/read_preferences_tests.js'
+        // '/test/tests/functional/fluent_api_tests.js'
       ]
     );
 
