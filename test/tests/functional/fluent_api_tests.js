@@ -43,7 +43,7 @@ exports['start with withWriteConcern and perform limit, isolate and update'] = f
   var col = db.collection('fluent_api');
 
   // Simple insert
-  col.insert([{g:1}, {g:1}], function(err, result) {
+  col.insert([{update:1}, {update:1}], function(err, result) {
     test.equal(null, err);
 
     // With write concern
@@ -51,7 +51,7 @@ exports['start with withWriteConcern and perform limit, isolate and update'] = f
       .withWriteConcern({j:true})
       .limit(10)
       .isolated()
-      .find({g:1})
+      .find({update:1})
       .update({$set:{c:1}}, function(err, result) {
         test.equal(null, err);
         test.equal(true, result.updatedExisting);
@@ -61,18 +61,18 @@ exports['start with withWriteConcern and perform limit, isolate and update'] = f
   });
 }
 
-exports['start with withWriteConcern and perform single document update'] = function(configuration, test) {
+exports['start with withWriteConcern and perform single document updateOne'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
   // Simple insert
-  col.insert({b:1}, function(err, result) {
+  col.insert({updateOne:1}, function(err, result) {
     test.equal(null, err);
 
     // With write concern
     col
       .withWriteConcern({j:true})
-      .find({b:1})
+      .find({updateOne:1})
       .updateOne({$set:{c:1}}, function(err, result) {
         test.equal(null, err);
         test.equal(true, result.updatedExisting);
@@ -87,37 +87,38 @@ exports['start with withWriteConcern and perform single updateOneAndGet'] = func
   var col = db.collection('fluent_api');
 
   // Simple insert
-  col.insert({d:1}, function(err, result) {
+  col.insert({updateOneAndGet:1}, function(err, result) {
     test.equal(null, err);
 
     // With write concern
     col
       .withWriteConcern({w:1})
-      .find({d:1})
+      .find({updateOneAndGet:1})
       .updateOneAndGet({$set:{e:1}}, function(err, doc) {
         test.equal(null, err);
         test.equal(1, doc.e);
+        test.equal(1, doc.updateOneAndGet);
         test.done();
       });
   });
 }
 
-exports['start with withWriteConcern and perform single updateOneAndGetOriginal'] = function(configuration, test) {
+exports['start with withWriteConcern and perform single getOneAndUpdate'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
   // Simple insert
-  col.insert({d:1}, function(err, result) {
+  col.insert({getOneAndUpdate:1}, function(err, result) {
     test.equal(null, err);
 
     // With write concern
     col
       .withWriteConcern({w:1})
-      .find({d:1})
-      .updateOneAndGetOriginal({$set:{e:1}}, function(err, doc) {
+      .find({getOneAndUpdate:1})
+      .getOneAndUpdate({$set:{e:1}}, function(err, doc) {
         test.equal(null, err);
         test.equal(null, doc.e);
-        test.equal(1, doc.d);
+        test.equal(1, doc.getOneAndUpdate);
         test.done();
       });
   });
@@ -128,17 +129,59 @@ exports['start with withWriteConcern and perform single replaceOneAndGet'] = fun
   var col = db.collection('fluent_api');
 
   // Simple insert
-  col.insert({d:1}, function(err, result) {
+  col.insert({replaceOneAndGet:1}, function(err, result) {
     test.equal(null, err);
 
     // With write concern
     col
       .withWriteConcern({w:1})
-      .find({d:1})
-      .replaceOneAndGet({d:2, e:10}, function(err, doc) {
+      .find({replaceOneAndGet:1})
+      .replaceOneAndGet({replaceOneAndGet:2, e:10}, function(err, doc) {
         test.equal(null, err);
         test.equal(10, doc.e);
-        test.equal(2, doc.d);
+        test.equal(2, doc.replaceOneAndGet);
+        test.done();
+      });
+  });
+}
+
+exports['start with withWriteConcern and perform single getOneAndReplace'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Simple insert
+  col.insert({getOneAndReplace:1}, function(err, result) {
+    test.equal(null, err);
+
+    // With write concern
+    col
+      .withWriteConcern({w:1})
+      .find({getOneAndReplace:1})
+      .getOneAndReplace({getOneAndReplace:2, e:10}, function(err, doc) {
+        test.equal(null, err);
+        test.equal(null, doc.e);
+        test.equal(1, doc.getOneAndReplace);
+        test.done();
+      });
+  });
+}
+
+exports['start with withWriteConcern and perform single getOneAndRemove'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Simple insert
+  col.insert({getOneAndReplace:1}, function(err, result) {
+    test.equal(null, err);
+
+    // With write concern
+    col
+      .withWriteConcern({w:1})
+      .find({getOneAndReplace:1})
+      .getOneAndRemove(function(err, doc) {
+        test.equal(null, err);
+        test.equal(null, doc.e);
+        test.equal(1, doc.getOneAndReplace);
         test.done();
       });
   });
