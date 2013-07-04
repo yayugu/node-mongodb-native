@@ -244,7 +244,7 @@ exports['Should fail due to not using mapreduce inline with read preference'] = 
 
     try {
       // Peform the map reduce
-      collection.mapReduce(map, reduce, {out: {append: "test"}}, function(err, collection) {});      
+      collection.mapReduce(map, reduce, {out: {append: "test"}}, function(err, collection) {});            
       test.fail();
     } catch(err) {
       db.close();

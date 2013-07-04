@@ -84,23 +84,23 @@ var single_server_config = function(options) {
       return mongodb;
     }
 
-    // this.newDbInstanceWithDomainSocket = function(host, db_options, server_options) {
-    //   var db = new Db('integration_tests', new Server(host, server_options), db_options);
-    //   dbs.push(db);
-    //   return db;
-    // }
+    this.newDbInstanceWithDomainSocket = function(host, db_options, server_options) {
+      var db = new Db('integration_tests', new Server(host, server_options), db_options);
+      dbs.push(db);
+      return db;
+    }
 
-    // this.newDbInstanceWithDomainSocketAndPort = function(host, port, db_options, server_options) {
-    //   var db = new Db('integration_tests', new Server(host, port, server_options), db_options);
-    //   dbs.push(db);
-    //   return db;
-    // }
+    this.newDbInstanceWithDomainSocketAndPort = function(host, port, db_options, server_options) {
+      var db = new Db('integration_tests', new Server(host, port, server_options), db_options);
+      dbs.push(db);
+      return db;
+    }
 
-    // this.newDbInstance = function(db_options, server_options) {
-    //   var db = new Db('integration_tests', new Server("127.0.0.1", 27017, server_options), db_options);
-    //   dbs.push(db);
-    //   return db;
-    // }
+    this.newDbInstance = function(db_options, server_options) {
+      var db = new Db('integration_tests', new Server("127.0.0.1", 27017, server_options), db_options);
+      dbs.push(db);
+      return db;
+    }
 
     this.connect = function(url_options, options, callback) {
       if(typeof options == 'function') {
