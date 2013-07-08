@@ -1328,7 +1328,6 @@ exports.shouldCorrectlyExecuteFindAndModifyUnderConcurrentLoad = function(config
 exports.shouldCorrectlyIterateOverCollection = function(configuration, test) {
   var numberOfSteps = 0;
 
-
   configuration.connect("w=0&maxPoolSize=1", function(err, db) {
     // Create a collection
     db.createCollection('shouldCorrectlyIterateOverCollection', function(err, collection) {
