@@ -18,6 +18,13 @@ var single_server_config = function(options) {
     var dbs = [];
     var db = new Db('integration_tests', new Server("127.0.0.1", 27017,
      {auto_reconnect: false, poolSize: 4}), {w:0, native_parser: false});
+    // Log any close attempts
+    db.close = function(callback) {
+      console.log("=================== NO CLOSE ALLOWED")
+      console.log("=================== NO CLOSE ALLOWED")
+      console.log("=================== NO CLOSE ALLOWED")
+      if(callback) callback(null, null);
+    }
 
     // Server Manager options
     var server_options = {

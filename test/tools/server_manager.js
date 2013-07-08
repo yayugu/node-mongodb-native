@@ -109,8 +109,8 @@ ServerManager.prototype.start = function(killall, options, callback) {
           // Start up mongod process
           var mongodb = exec(startCmd,
             function (error, stdout, stderr) {
-              // console.log('stdout: ' + stdout);
-              // console.log('stderr: ' + stderr);
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
               if (error != null) {
                 console.log('exec error: ' + error);
               }
@@ -136,6 +136,8 @@ ServerManager.prototype.start = function(killall, options, callback) {
       // Start up mongod process
       var mongodb = exec(startCmd,
         function (error, stdout, stderr) {
+          console.log('stdout: ' + stdout);
+          console.log('stderr: ' + stderr);
           if (error != null) {
             console.log('exec error: ' + error);
           }

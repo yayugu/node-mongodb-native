@@ -16,7 +16,8 @@ module.exports = function(configurations) {
     // Third parameter is the list of files to execute
     .add("functional_tests",
       [
-        '/test/tests/functional/mongo_reply_parser_tests.js'
+          '/test/tests/functional/cursorstream_tests.js'
+        , '/test/tests/functional/mongo_reply_parser_tests.js'
         , '/test/tests/functional/connection_pool_tests.js'
         , '/test/tests/functional/gridstore/readstream_tests.js'
         , '/test/tests/functional/gridstore/grid_tests.js'
@@ -34,7 +35,6 @@ module.exports = function(configurations) {
         , '/test/tests/functional/unicode_tests.js'
         , '/test/tests/functional/raw_tests.js'
         , '/test/tests/functional/mapreduce_tests.js'
-        , '/test/tests/functional/cursorstream_tests.js'
         , '/test/tests/functional/index_tests.js'
         , '/test/tests/functional/cursor_tests.js'
         , '/test/tests/functional/find_tests.js'
@@ -51,6 +51,7 @@ module.exports = function(configurations) {
         , '/test/tests/functional/collection_tests.js'
         , '/test/tests/functional/db_tests.js'
         , '/test/tests/functional/read_preferences_tests.js'
+
         // , '/test/tests/functional/fluent_api/insert_tests.js'
         // , '/test/tests/functional/fluent_api/update_tests.js'
         // , '/test/tests/functional/fluent_api/find_tests.js'

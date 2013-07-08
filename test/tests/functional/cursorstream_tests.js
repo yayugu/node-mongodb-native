@@ -11,7 +11,6 @@ exports.shouldStreamDocumentsUsingTheCursorStreamPauseFunction = function(config
   // DOC_LINE // Connect to the server using MongoClient
   // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
-
     // Create a lot of documents to insert
     var docs = []
     for(var i = 0; i < 1; i++) {
