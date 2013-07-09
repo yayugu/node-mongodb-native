@@ -64,3 +64,22 @@ exports['Should correctly execute query explain'] = function(configuration, test
       test.done();
     });
 }
+
+exports['Should correctly execute count'] = function(configuration, test) {
+  var ReadPreference = configuration.getMongoPackage().ReadPreference;
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // With write concern
+  col
+    .find({count: {$gt: 0}})
+    .withReadPreference(ReadPreference.SECONDARY)    
+    .limit(1)
+    .skip(1)
+    .sort({count: -1})
+    .count(function(err, count) {
+      test.equal(null, err);
+      test.equal(0, count);
+      test.done();
+    });
+}
