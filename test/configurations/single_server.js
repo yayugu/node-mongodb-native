@@ -70,11 +70,9 @@ var single_server_config = function(options) {
 
     // Test suite stop
     this.stop = function(callback) {
-      db.close(function() {
-        serverManager.killAll(function(err) {
-          callback();
-        });        
-      })
+      serverManager.killAll(function(err) {
+        callback();
+      });        
     };
 
     // Pr test functions
