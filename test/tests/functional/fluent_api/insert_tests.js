@@ -34,6 +34,7 @@ exports['start with withWriteConcern and perform save'] = function(configuration
     .withWriteConcern({j:true})
     .save({a:1}, function(err, result) {
       test.equal(null, err);
+      test.equal(1, result.a);
       test.done();
     });
 }

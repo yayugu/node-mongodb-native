@@ -53,8 +53,8 @@ module.exports = function(configurations) {
         // , '/test/tests/functional/read_preferences_tests.js'
 
         // Fluent api
-        // , '/test/tests/functional/fluent_api/insert_tests.js'
-        // , '/test/tests/functional/fluent_api/update_tests.js'
+        , '/test/tests/functional/fluent_api/insert_tests.js'
+        , '/test/tests/functional/fluent_api/update_tests.js'
         , '/test/tests/functional/fluent_api/find_tests.js'
       ]
     );

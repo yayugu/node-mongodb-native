@@ -146,3 +146,81 @@ exports['start with withWriteConcern and perform single getOneAndRemove'] = func
       });
   });
 }
+
+exports['start with withWriteConcern and perform single replace'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Simple insert
+  col.insert([{replace:1, a:1}], function(err, result) {
+    test.equal(null, err);
+
+    // With write concern
+    col
+      .withWriteConcern({w:1})
+      .find({replace:1})
+      .replaceOne({replace:2, a:3}, function(err, result) {
+
+        col
+          .find({replace:2})
+          .fields({replace:1})
+          .getOne(function(err, doc) {
+            test.equal(null, err);
+            test.equal(2, doc.replace);
+            test.equal(null, doc.a);
+            test.done();
+          });
+      });
+  });
+}
+
+exports['start with withWriteConcern and perform single save'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Simple insert
+  col.insert([{replace:1, a:1}], function(err, docs) {
+    test.equal(null, err);
+
+    // With write concern
+    col
+      .withWriteConcern({w:1})
+      .save(docs[0], function(err, doc) {
+        test.equal(null, err);
+        test.equal(1, doc.replace);
+        test.done();
+      });
+  });
+}
+
+exports['start with withWriteConcern and perform limit, isolate, upsert and update'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // With write concern
+  col
+    .withWriteConcern({j:true})
+    .limit(10)
+    .isolated()
+    .upsert()
+    .find({upsert:1})
+    .update({$set:{upsert:2}}, function(err, result) {
+      test.equal(null, err);
+      test.equal(false, result.updatedExisting);
+      test.equal(1, result.n);
+
+      // Upsert should fail
+      col
+        .withWriteConcern({j:true})
+        .limit(10)
+        .isolated()
+        .find({upsert:3})
+        .update({$set:{upsert:4}}, function(err, result) {
+          test.equal(null, err);
+          test.equal(false, result.updatedExisting);
+          test.equal(0, result.n);
+          test.done();
+        });
+    });
+}
+
