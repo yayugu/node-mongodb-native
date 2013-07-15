@@ -214,3 +214,41 @@ exports['Should correctly execute query explain using min and max'] = function(c
     });
   });
 }
+
+exports['start a find chain and copy it then morph the existing without modifying existing'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Insert a couple of docs
+  var docs = [];
+  for(var i = 0; i < 10; i++) docs.push({scope_find: i});
+
+  // Simple insert
+  col.insert(docs, function(err, result) {
+    test.equal(null, err);
+
+    // Scope one
+    var scope1 = col
+                  .find()
+                  .limit(10);
+
+    // Scope two
+    var scope2 = scope1.copy();
+
+    // Modify scope one
+    scope1.limit(1);
+
+    // Execute the queries
+    scope1.get(function(err, docs) {
+      test.equal(null, err);
+      test.equal(1, docs.length);
+
+      // Execute query 2
+      scope2.get(function(err, docs) {
+        test.equal(null, err);
+        test.equal(10, docs.length);
+        test.done();
+      });
+    });
+  });
+}
