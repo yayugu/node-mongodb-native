@@ -693,7 +693,7 @@ exports.shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW0 = function(confi
  */
 exports.shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW2 = function(configuration, test) {
   var client = configuration.db();
-  client.createCollection('shouldCorrectlyFindAndModifyWithNoGetLastErrorChained', function(err, collection) {
+  client.createCollection('shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW2', function(err, collection) {
     // Let's modify the document in place
     collection.findAndModify({'a':1}, [['a', 1]], {'$set':{'b':3}}, {'new':true, 'fields': {a:1}, w:2}, function(err, updated_doc) {
       // Check if we have a chained command or not

@@ -221,7 +221,7 @@ exports['start with withWriteConcern and perform limit, upsert and update'] = fu
     });
 }
 
-exports['start a chain and copy it then morph the existing without modifying existing'] = function(configuration, test) {
+exports['start a chain and copy it then morph the existing without modifying existing for update'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
 

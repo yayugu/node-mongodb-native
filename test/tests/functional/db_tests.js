@@ -1183,7 +1183,7 @@ exports.shouldCreateComplexIndexOnTwoFields = function(configuration, test) {
  * @_class db
  * @_function ensureIndex
  */
-exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
+exports.shouldCreateComplexEnsureIndexOnDb = function(configuration, test) {
   configuration.connect("w=0&maxPoolSize=1", function(err, db) {
 
   // DOC_LINE // Connect to the server using MongoClient
