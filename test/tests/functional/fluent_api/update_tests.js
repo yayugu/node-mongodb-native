@@ -1,4 +1,4 @@
-exports['start with withWriteConcern and perform limit, isolate and update'] = function(configuration, test) {
+exports['start with withWriteConcern and perform limit and update'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
@@ -10,7 +10,6 @@ exports['start with withWriteConcern and perform limit, isolate and update'] = f
     col
       .withWriteConcern({j:true})
       .limit(10)
-      .isolated()
       .find({update:1})
       .update({$set:{c:1}}, function(err, result) {
         test.equal(null, err);
@@ -193,7 +192,7 @@ exports['start with withWriteConcern and perform single save'] = function(config
   });
 }
 
-exports['start with withWriteConcern and perform limit, isolate, upsert and update'] = function(configuration, test) {
+exports['start with withWriteConcern and perform limit, upsert and update'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
@@ -201,7 +200,6 @@ exports['start with withWriteConcern and perform limit, isolate, upsert and upda
   col
     .withWriteConcern({j:true})
     .limit(10)
-    .isolated()
     .upsert()
     .find({upsert:1})
     .update({$set:{upsert:2}}, function(err, result) {
@@ -213,7 +211,6 @@ exports['start with withWriteConcern and perform limit, isolate, upsert and upda
       col
         .withWriteConcern({j:true})
         .limit(10)
-        .isolated()
         .find({upsert:3})
         .update({$set:{upsert:4}}, function(err, result) {
           test.equal(null, err);
@@ -222,5 +219,45 @@ exports['start with withWriteConcern and perform limit, isolate, upsert and upda
           test.done();
         });
     });
+}
+
+exports['start a chain and copy it then morph the existing without modifying existing'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Insert a couple of docs
+  var docs = [];
+  for(var i = 0; i < 10; i++) docs.push({scope: i, scope_i: 1});
+
+  // Simple insert
+  col.insert(docs, function(err, result) {
+    test.equal(null, err);
+
+    // Scope one
+    var scope1 = col
+                  .withWriteConcern({j:true})
+                  .limit(5)
+                  .upsert()
+                  .find({scope:1});
+
+    // Scope two
+    var scope2 = scope1.copy();
+
+    // Modify scope one
+    scope1.limit(1);
+
+    // Execute both updates
+    scope1.update({$set:{scope:4}}, function(err, result) {
+      test.equal(null, err);
+      test.equal(1, result.n);
+
+      // Execute modified scope
+      scope2.find({scope_i:1}).update({$set:{scope_i:1}}, function(err, result) {
+        test.equal(null, err);
+        test.equal(10, result.n);
+        test.done();
+      });
+    });
+  });
 }
 

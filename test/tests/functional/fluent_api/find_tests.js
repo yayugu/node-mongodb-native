@@ -152,7 +152,7 @@ exports['Should correctly execute query explain using maxScan'] = function(confi
       // With write concern
       col
         .find({maxScan: 1})
-        .maxScan(10)
+        .withQueryOptions({maxScan: 10})
         .maxTime(1000)
         .get(function(err, docs) {
           test.equal(null, err);
@@ -167,7 +167,6 @@ exports['Should correctly execute query explain using min and max'] = function(c
   var ReadPreference = configuration.getMongoPackage().ReadPreference;
   var db = configuration.db();
   var col = db.collection('fluent_api');
-
   // Insert 100 documents
   var docs = [
       { "_id" : 6, "item" : "apple", "type" : "cortland", "price" : 1.29 }
@@ -198,8 +197,12 @@ exports['Should correctly execute query explain using min and max'] = function(c
           // With write concern
           col
             .find()
-            .min( { item: 'apple', type: 'jonagold' } )
-            .max( { item: 'apple', type: 'navel' } )
+            .withQueryOptions({
+                min: { item: 'apple', type: 'jonagold' }
+              , max: { item: 'apple', type: 'navel' }
+            })
+            // .min( { item: 'apple', type: 'jonagold' } )
+            // .max( { item: 'apple', type: 'navel' } )
             .hint( { item: 1, type: 1 } )
             .get(function(err, docs) {
               test.equal(null, err);
