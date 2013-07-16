@@ -303,7 +303,89 @@ exports['Should correctly perform a simple text search and perform stream'] = fu
 	});
 };
 
+exports['Should correctly perform a simple text search and count'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api_text7');
 
+  // Insert some documents
+  var docs = [{
+  	  id: 1
+  	, title: "little red ridding hood"
+  	, description: "we have some description"
+  }, {
+  	  id: 2
+		, title: "the brothers grim"
+  	, description: "we have some description"
+  }];
+
+  // Insert the documents
+  col.insert(docs, function(err, result) {
+  	test.equal(null, err);
+
+	  // Enable text index
+	  db.admin().command({setParameter: true, textSearchEnabled: true}, function(err, result) {
+
+	  	// Create the text index
+	  	col.ensureIndex({ "$**": "text" }, {language:'english'}, function(err, result) {
+	  		test.equal(null, err);
+	
+		  	// Execute a text search command
+		  	col.find({id:1})
+		  		.limit(1)
+		  		.skip(0)
+		  		.fields({title:1})
+		  		.withSearchOptions({language:'english'})
+		  		.text("red").count(function(err, results) {
+		  			test.equal(null, err);
+		  			test.equal(1, results);
+		  			test.done();
+		  		});
+	  	});
+	  });
+	});
+};
+
+exports['Should correctly perform a simple text search and explain'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api_text7');
+
+  // Insert some documents
+  var docs = [{
+  	  id: 1
+  	, title: "little red ridding hood"
+  	, description: "we have some description"
+  }, {
+  	  id: 2
+		, title: "the brothers grim"
+  	, description: "we have some description"
+  }];
+
+  // Insert the documents
+  col.insert(docs, function(err, result) {
+  	test.equal(null, err);
+
+	  // Enable text index
+	  db.admin().command({setParameter: true, textSearchEnabled: true}, function(err, result) {
+
+	  	// Create the text index
+	  	col.ensureIndex({ "$**": "text" }, {language:'english'}, function(err, result) {
+	  		test.equal(null, err);
+	
+		  	// Execute a text search command
+		  	col.find({id:1})
+		  		.limit(1)
+		  		.skip(0)
+		  		.fields({title:1})
+		  		.withSearchOptions({language:'english'})
+		  		.text("red").explain(function(err, results) {
+		  			test.equal(null, err);
+		  			test.ok(results.stats);
+		  			test.done();
+		  		});
+	  	});
+	  });
+	});
+};
 
 
 
