@@ -57,6 +57,7 @@ module.exports = function(configurations) {
         , '/test/tests/functional/fluent_api/update_tests.js'
         , '/test/tests/functional/fluent_api/find_tests.js'
         , '/test/tests/functional/fluent_api/aggregation_tests.js'
+        , '/test/tests/functional/fluent_api/text_tests.js'
       ]
     );
 
