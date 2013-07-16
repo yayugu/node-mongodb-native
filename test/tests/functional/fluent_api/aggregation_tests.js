@@ -100,6 +100,61 @@ exports['Should correctly perform a simple pipe aggregation command and explain'
   });
 }
 
+exports['Should correctly perform a simple pipe aggregation command and each'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Insert a couple of docs
+  var docs = [];
+  var counter = 0;
+  for(var i = 0; i < 10; i++) docs.push({agg_pipe5: i});
+
+  // Simple insert
+  col.insert(docs, function(err, result) {
+    test.equal(null, err);
+
+    // Execute the aggregation
+    col.pipe().find({agg_pipe5: {$gt: 5}}).each(function(err, result) {
+      test.equal(null, err);
+
+      if(!result) {
+        test.equal(4, counter);
+        test.done();
+      } else {
+        counter += 1;
+      }
+    });
+  });
+}
+
+exports['Should correctly perform a simple pipe aggregation command and next'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // Insert a couple of docs
+  var docs = [];
+  var counter = 0;
+  for(var i = 0; i < 10; i++) docs.push({agg_pipe6: i});
+
+  // Simple insert
+  col.insert(docs, function(err, result) {
+    test.equal(null, err);
+
+    // Execute the aggregation
+    var cursor = col.pipe().find({agg_pipe6: {$gt: 5}});
+    cursor.next(function(err, result) {
+      test.equal(null, err);
+      test.equal(6, result.agg_pipe6);
+
+      cursor.next(function(err, result) {
+        test.equal(null, err);
+        test.equal(7, result.agg_pipe6);
+        test.done();
+      });
+    });
+  });
+}
+
 exports['Should correctly perform a simple pipe aggregation command and print as stream'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
