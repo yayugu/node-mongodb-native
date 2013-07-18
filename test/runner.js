@@ -14,19 +14,28 @@ var replica_set_config = require('./configurations/replicasets').replica_set_con
   , replica_set_config_auth = require('./configurations/replicasets').replica_set_config_auth
   , none = require('./configurations/none').none;
 
+//
+// Mongod Configuration file locations
+//
+var config_2_6 = __dirname + "/configurations/server_configs/all_2_6_options.conf";
+
 // 
 //  Configurations
 //
 var configurations = Configuration  
   // Single server configuration
   .add('single_server', single_server_config())
+  .add('single_server_2_6', single_server_config({config: config_2_6}))
   .add('single_server_auth', single_server_config({auth:true}))
+  
   // Simple Replicaset Configuration
   .add('replica_set', replica_set_config())
   .add('replica_set_auth', replica_set_config_auth({auth:true}))
+  
   // Simple Sharded Configuration
   .add('sharded', sharded_config())
   .add('sharded_auth', sharded_config({auth:true}))
+  
   // No operations configuration
   .add('none', none);
 

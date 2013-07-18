@@ -5,6 +5,9 @@ exports['Should correctly perform a simple pipe aggregation command and get'] = 
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
+
   // Insert a couple of docs
   var docs = [];
   for(var i = 0; i < 10; i++) docs.push({agg_pipe: i});
@@ -15,6 +18,10 @@ exports['Should correctly perform a simple pipe aggregation command and get'] = 
 
     // Execute the aggregation
     col.pipe().find({agg_pipe: {$gt: 5}}).get(function(err, results) {
+      console.log("+++++++++++++++++++++++++++++++++++++++++++++ 0")
+      console.dir(err)
+      console.dir(results)
+
     	test.equal(null, err);
     	test.equal(4, results.length);
 	    test.done();
@@ -25,6 +32,9 @@ exports['Should correctly perform a simple pipe aggregation command and get'] = 
 exports['Should correctly perform a simple pipe aggregation command and getOne'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
 
   // Insert a couple of docs
   var docs = [];
@@ -46,6 +56,9 @@ exports['Should correctly perform a simple pipe aggregation command and getOne']
 exports['Should correctly perform a complete pipe aggregation command and get'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
 
   // Some docs for insertion
   var docs = [{
@@ -82,6 +95,9 @@ exports['Should correctly perform a simple pipe aggregation command and explain'
   var db = configuration.db();
   var col = db.collection('fluent_api');
 
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
+
   // Insert a couple of docs
   var docs = [];
   for(var i = 0; i < 10; i++) docs.push({agg_pipe3: i});
@@ -103,6 +119,9 @@ exports['Should correctly perform a simple pipe aggregation command and explain'
 exports['Should correctly perform a simple pipe aggregation command and each'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
 
   // Insert a couple of docs
   var docs = [];
@@ -130,6 +149,9 @@ exports['Should correctly perform a simple pipe aggregation command and each'] =
 exports['Should correctly perform a simple pipe aggregation command and next'] = function(configuration, test) {
   var db = configuration.db();
   var col = db.collection('fluent_api');
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
 
   // Insert a couple of docs
   var docs = [];
@@ -159,6 +181,9 @@ exports['Should correctly perform a simple pipe aggregation command and print as
   var db = configuration.db();
   var col = db.collection('fluent_api');
 	var liner = new stream.Transform( { objectMode: true } )
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
 
 	// Add tranformer
 	liner._transform = function(object, encoding, done) {

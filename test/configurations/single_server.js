@@ -18,6 +18,7 @@ var single_server_config = function(options) {
     var dbs = [];
     var db = new Db('integration_tests', new Server("127.0.0.1", 27017,
      {auto_reconnect: false, poolSize: 4}), {w:0, native_parser: false});
+
     // Log any close attempts
     db.close = function(callback) {
       console.log("=================== NO CLOSE ALLOWED")
@@ -39,13 +40,18 @@ var single_server_config = function(options) {
     // Server manager
     var serverManager = new ServerManager(server_options);
     var dbs = [];
+    var buildInfo = null;
 
     // Test suite start
     this.start = function(callback) {
       serverManager.start(true, function(err) {
         if(err) throw err;
         db.open(function(err, result) {
-          callback();
+          // Grab the build Info for tests to be able to skip certain methods
+          db.command({buildInfo:true}, function(err, result) {
+            buildInfo = result;
+            callback();
+          });
         })
       });
     }
@@ -87,6 +93,10 @@ var single_server_config = function(options) {
     // Returns the package for using Mongo driver classes
     this.getMongoPackage = function() {
       return mongodb;
+    }
+
+    this.getServerVersion = function() {
+      return parseInt(buildInfo.version.replace(/\./g, ''), 10);
     }
 
     this.newDbInstanceWithDomainSocket = function(host, db_options, server_options) {

@@ -49,6 +49,7 @@ var ensureUp = function(self, host, port, number_of_retries, callback) {
 
 var ServerManager = exports.ServerManager = function(options) {
   options = options == null ? {} : options;
+  
   // Basic unpack values
   this.path = path.resolve("data");
   this.port = options["start_port"] != null ? options["start_port"] : 27017;
@@ -61,6 +62,8 @@ var ServerManager = exports.ServerManager = function(options) {
   this.ssl_server_pem = options['ssl_server_pem'] != null ? options['ssl_server_pem'] : null;
   this.ssl_server_pem_pass = options['ssl_server_pem_pass'] != null ? options['ssl_server_pem_pass'] : null;
   this.ssl_weak_certificate_validation = options['ssl_weak_certificate_validation'] != null ? options['ssl_weak_certificate_validation'] : null;
+  this.config = options['config'] != null ? options['config'] : null;
+  
   // Ca settings for ssl
   this.ssl_ca = options['ssl_ca'] != null ? options['ssl_ca'] : null;
   this.ssl_crl = options['ssl_crl'] != null ? options['ssl_crl'] : null;
@@ -95,9 +98,18 @@ ServerManager.prototype.start = function(killall, options, callback) {
   }
 
   // Create start command
-  var startCmd = generateStartCmd(this, {configserver:self.configServer, log_path: self.log_path,
-    db_path: self.db_path, port: self.port, journal: self.journal, auth:self.auth, ssl:self.ssl});
+  var startCmd = generateStartCmd(this, {
+      configserver:self.configServer
+    , log_path: self.log_path
+    , db_path: self.db_path
+    , port: self.port
+    , journal: self.journal
+    , auth:self.auth
+    , ssl:self.ssl
+    , config: self.config
+  });
 
+  // Kill all the existing mongod instances
   exec(killall ? 'killall -9 mongod' : '', function(err, stdout, stderr) {
     if(self.purgedirectories) {
       // Remove directory
@@ -199,6 +211,8 @@ var generateStartCmd = function(self, options) {
   startCmd = options['journal'] ? startCmd + " --journal" : startCmd;
   startCmd = options['auth'] ? startCmd + " --auth" : startCmd;
   startCmd = options['configserver'] ? startCmd + " --configsvr" : startCmd;
+  startCmd = options['config'] ? startCmd + " --config " + options['config'] : startCmd;
+  
   // If we have ssl defined set up with test certificate
   if(options['ssl']) {
     var path = getPath(self, self.ssl_server_pem);
@@ -220,7 +234,9 @@ var generateStartCmd = function(self, options) {
       startCmd = startCmd + " --sslWeakCertificateValidation"
     }
   }
-  // console.log(startCmd)
+
+  console.log("=========================================================");
+  console.log(startCmd);
 
   // Return start command
   return startCmd;
