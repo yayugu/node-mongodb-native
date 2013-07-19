@@ -577,8 +577,7 @@ exports.shouldInsertAndQueryTimestamp = function(configuration, test) {
     collection.findOne({}, function(err, item) {
       test.ok(item.i instanceof Timestamp);
       test.equal(100, item.i);
-      test.ok(typeof item.j == "number");
-      test.equal(200, item.j);
+      test.equal(200, item.j.toNumber());
       test.done();
     });
   });
@@ -1454,6 +1453,32 @@ exports.shouldCorrectlyInsertSimpleUTF8Regexp = function(configuration, test) {
       });
     });
   });    
+}
+
+exports.shouldCorrectlyThrowDueToIllegalCollectionName = function(configuration, test) {
+  var db = configuration.db();
+
+  var k = new Buffer(15);
+  for (var i = 0; i < 15; i++)
+    k[i] = 0;
+
+  k.write("hello");
+  k[6] = 0x06;
+  k.write("world", 10);
+
+
+  try {
+    var collection = db.collection(k.toString());
+    test.fail(false);
+  } catch (err) {
+  }
+
+  var collection = db.collection('test');
+  collection.collectionName = k.toString();
+  collection.insert({'b':1}, {w:1}, function(err, ids) {
+    test.ok(err != null);
+    test.done();
+  });
 }
 
 // exports.shouldCorrectlyPullDoc = function(configuration, test) {
