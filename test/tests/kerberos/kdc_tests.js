@@ -59,7 +59,6 @@ exports['Should Correctly Authenticate using kerberos with MongoClient and then 
       test.ok(docs.documents[0].databases);
 
       // Close the connection
-      // db.close();
       db.serverConfig.connectionPool.openConnections[0].connection.destroy();
 
       setTimeout(function() {

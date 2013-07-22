@@ -21,9 +21,6 @@ var single_server_config = function(options) {
 
     // Log any close attempts
     db.close = function(callback) {
-      console.log("=================== NO CLOSE ALLOWED")
-      console.log("=================== NO CLOSE ALLOWED")
-      console.log("=================== NO CLOSE ALLOWED")
       if(callback) callback(null, null);
     }
 

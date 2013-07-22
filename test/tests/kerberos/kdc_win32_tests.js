@@ -70,20 +70,25 @@ exports['Should Correctly Authenticate using kerberos on Win32 with MongoClient 
   var urlEncodedPrincipal = encodeURIComponent(principal);
 
   // Let's write the actual connection code
-  MongoClient.connect(format("mongodb://%s:%s@%s/test?authMechanism=GSSAPI&maxPoolSize=5", urlEncodedPrincipal, pass, server), function(err, db) {
-    test.equal(null, err);
-    test.ok(db != null);
-
-    // Close the connection
-    db.close();
-
+  MongoClient.connect(format("mongodb://%s:%s@%s/test?authMechanism=GSSAPI&maxPoolSize=2", urlEncodedPrincipal, pass, server), function(err, db) {
     // Attempt an operation
     db.admin().command({listDatabases:1}, function(err, docs) {
       test.equal(null, err);
       test.ok(docs.documents[0].databases);
 
-      db.close();
-      test.done();
+      // Close the connection
+      db.serverConfig.connectionPool.openConnections[0].connection.destroy();
+
+      setTimeout(function() {
+        // Attempt an operation
+        db.admin().command({listDatabases:1}, function(err, docs) {
+          test.equal(null, err);
+          test.ok(docs.documents[0].databases);
+
+          db.close();
+          test.done();
+        });
+      }, 1000);
     });
   });
 }
