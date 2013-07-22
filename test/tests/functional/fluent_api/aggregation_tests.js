@@ -9,21 +9,17 @@ exports['Should correctly perform a simple pipe aggregation command and get'] = 
   if(configuration.getServerVersion() < 251) return test.done();
 
   // Insert a couple of docs
-  var docs = [];
-  for(var i = 0; i < 10; i++) docs.push({agg_pipe: i});
+  var docs_1 = [];
+  for(var i = 0; i < 100; i++) docs_1.push({agg_pipe: i});
 
   // Simple insert
-  col.insert(docs, function(err, result) {
+  col.insert(docs_1, {w:1}, function(err, result) {
     test.equal(null, err);
 
     // Execute the aggregation
     col.pipe().find({agg_pipe: {$gt: 5}}).get(function(err, results) {
-      console.log("+++++++++++++++++++++++++++++++++++++++++++++ 0")
-      console.dir(err)
-      console.dir(results)
-
     	test.equal(null, err);
-    	test.equal(4, results.length);
+    	test.equal(94, results.length);
 	    test.done();
     });
   });
