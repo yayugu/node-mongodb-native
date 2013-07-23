@@ -235,8 +235,8 @@ var generateStartCmd = function(self, options) {
     }
   }
 
-  console.log("=========================================================");
-  console.log(startCmd);
+  // console.log("=========================================================");
+  // console.log(startCmd);
 
   // Return start command
   return startCmd;
