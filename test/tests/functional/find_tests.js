@@ -688,42 +688,6 @@ exports.shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW0 = function(confi
 }
 
 /**
- * Test findAndModify a document with no write concern set
- * @ignore
- */
-exports.shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW2 = function(configuration, test) {
-  var client = configuration.db();
-  client.createCollection('shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedW2', function(err, collection) {
-    // Let's modify the document in place
-    collection.findAndModify({'a':1}, [['a', 1]], {'$set':{'b':3}}, {'new':true, 'fields': {a:1}, w:2}, function(err, updated_doc) {
-      // Check if we have a chained command or not
-      var ids = client.serverConfig._callBackStore.notRepliedToIds();
-      test.equal(0, ids.length);
-      test.done();
-    });
-
-    // Check if we have a chained command or not
-    var ids = client.serverConfig._callBackStore.notRepliedToIds();
-    test.equal(2, ids.length);
-    test.ok(client.serverConfig._callBackStore.callbackInfo(ids[0].chained) == undefined);
-  });
-}
-
-exports.shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedSafe = function(configuration, test) {
-  var client = configuration.db();
-  client.createCollection('shouldCorrectlyFindAndModifyWithNoGetLastErrorChainedSafe', function(err, collection) {
-    // Let's modify the document in place
-    collection.findAndModify({'a':1}, [['a', 1]], {'$set':{'b':3}}, {'new':true, 'fields': {a:1}, safe:false}, function(err, updated_doc) {
-      test.done();
-    });
-
-    // Check if we have a chained command or not
-    var ids = client.serverConfig._callBackStore.notRepliedToIds();
-    test.ok(client.serverConfig._callBackStore.callbackInfo(ids[0].chained) == undefined);
-  });
-}
-
-/**
  * @ignore
  */
 exports.shouldCorrectlyExecuteFindOneWithAnInSearchTag = function(configuration, test) {
@@ -970,33 +934,6 @@ exports.shouldCorrectlyFindAndModifyDocumentThatFailsInFirstStep = function(conf
         collection.findAndModify({'c':2}, [['a', 1]], {'a':10, 'b':10, 'failIndex':2}, {w:1, upsert:true}, function(err, result) {
           test.equal(null, result);
           test.ok(err.errmsg.match("duplicate key error index"));
-          test.done();
-        })
-      });
-    });
-  });
-}
-
-/**
- * Test findAndModify a document that fails in first step before safe
- * @ignore
- */
-exports.shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingDocuments = function(configuration, test) {
-
-  configuration.connect("w=1&maxPoolSize=1", function(err, db) {
-  // DOC_LINE // Connect to the server using MongoClient
-  // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
-  // DOC_START
-    
-    db.createCollection('shouldCorrectlyFindAndModifyDocumentThatFailsInSecondStepWithNoMatchingDocuments', function(err, collection) {
-      // Test return old document on change
-      collection.insert({'a':2, 'b':2}, function(err, doc) {
-
-        // Let's modify the document in place
-        collection.findAndModify({'a':2}, [['a', 1]], {'$set':{'b':3}}, {safe:{w:200, wtimeout:1000}}, function(err, result) {
-          test.equal(null, result);
-          test.ok(err != null);
-          db.close();
           test.done();
         })
       });
