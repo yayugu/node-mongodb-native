@@ -218,3 +218,40 @@ exports['Should correctly perform a simple pipe aggregation command and print as
     });
   });
 }
+
+exports['Should correctly perform a simple pipe aggregation command, next, close and correctly fail'] = function(configuration, test) {
+  var db = configuration.db();
+  var col = db.collection('fluent_api');
+
+  // If we have a pre 2.5.1 server ignore test
+  if(configuration.getServerVersion() < 251) return test.done();
+
+  // Insert a couple of docs
+  var docs = [];
+  var counter = 0;
+  for(var i = 0; i < 10; i++) docs.push({agg_pipe10: i});
+
+  // Simple insert
+  col.insert(docs, function(err, result) {
+    test.equal(null, err);
+
+    // Execute the aggregation
+    var cursor = col.pipe().find({agg_pipe10: {$gt: 5}});
+    cursor.next(function(err, result) {
+      test.equal(null, err);
+      test.equal(6, result.agg_pipe10);
+
+      // Close the cursor
+      cursor.close(function() {
+
+        // Peform next should fail
+        cursor.next(function(err, result) {
+          test.ok(err != null);
+          test.equal(null, result);
+          test.done();
+        });
+      });
+    });
+  });
+}
+
