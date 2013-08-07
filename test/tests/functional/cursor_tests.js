@@ -2237,40 +2237,46 @@ exports.shouldStreamDocumentsUsingTheCloseFunction = function(configuration, tes
   // DOC_END
 }
 
-// /**
-//  * @ignore
-//  * @api private
-//  */
-// exports.shouldNotHangOnTailableCursor = function(configuration, test) {
-//   var docs = [];
-//   var totaldocs = 2000;
-//   for(var i = 0; i < totaldocs; i++) docs.push({a:i, OrderNumber:i});
-//   var options = { capped: true, size: (1024 * 1024 * 16) };
-//   var index = 0;
+/**
+ * @ignore
+ * @api private
+ */
+exports.shouldNotHangOnTailableCursor = function(configuration, test) {
+  // var client = configuration.db();
+  var docs = [];
+  var totaldocs = 2000;
+  for(var i = 0; i < totaldocs; i++) docs.push({a:i, OrderNumber:i});
+  var options = { capped: true, size: (1024 * 1024 * 16) };
+  var index = 0;
 
-//   configuration.connect("w=0&maxPoolSize=1", function(err, db) {
-//     db.createCollection('shouldNotHangOnTailableCursor', options, function(err, collection) {
-//       collection.insert(docs, {w:1}, function(err, ids) {    
-//         var cursor = collection.find({}, {tailable:true});
-//         cursor.each(function(err, doc) {
-//           index += 1;
+  // this.newDbInstance = function(db_options, server_options) {
+  var client = configuration.newDbInstance({w:1}, {auto_reconnect:true});
 
-//           if(err) {            
-//             db.close();
+  client.open(function(err, client) {
+    client.createCollection('shouldNotHangOnTailableCursor', options, function(err, collection) {
+      collection.insert(docs, {w:1}, function(err, ids) {    
+        var cursor = collection.find({}, {tailable:true});
+        cursor.each(function(err, doc) {
+          index += 1;
+
+          if(err) {            
+            client.close();
             
-//             // Ensure we have a server up and running
-//             return configuration.start(function() {
-//               test.done();
-//             });
-//           } else if(index == totaldocs) {
-//             test.ok(false);
-//           }
+            // Ensure we have a server up and running
+            return configuration.start(function() {
+              test.done();
+            });
+          } else if(index == totaldocs) {
 
-//           if(index == 10) {
-//             configuration.restartNoEnsureUp(function(err) {}); 
-//           }
-//         });
-//       });
-//     });
-//   });
-// }
+
+            test.ok(false);
+          }
+
+          if(index == 10) {
+            configuration.restartNoEnsureUp(function(err) {}); 
+          }
+        });
+      });
+    });
+  });
+}

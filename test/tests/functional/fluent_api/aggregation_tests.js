@@ -194,14 +194,16 @@ exports['Should correctly perform a simple pipe aggregation command and print as
   // Simple insert
   col.insert(docs, function(err, result) {
     test.equal(null, err);
+    // process.exit(0)
 
     // Execute the aggregation
     var agg_stream = col.pipe().find({agg_pipe4: {$gt: 0}});
     var file_stream = fs.createWriteStream(process.cwd() + '/agg.tmp');
     liner.pipe(file_stream);
     agg_stream.pipe(liner);
-    file_stream.on('close', function() {
 
+    // Wait for the file to close
+    file_stream.on('close', function() {
     	// Get all the results
 	    col.pipe().find({agg_pipe4: {$gt: 0}}).get(function(err, items) {
 	    	test.equal(null, err);

@@ -139,8 +139,7 @@ exports.shouldCreateComplexEnsureIndex = function(configuration, test) {
  * @_class collection
  * @_function indexInformation
  */
-exports.shouldCorrectlyShowTheResultsFromIndexInformation = function(configuration, test) {
-
+exports.shouldCorrectlyShowAllTheResultsFromIndexInformation = function(configuration, test) {
   configuration.connect("w=0&maxPoolSize=1", function(err, db) {
   // DOC_LINE // Connect to the server using MongoClient
   // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
@@ -284,15 +283,14 @@ exports.shouldCorrectlyCreateAndDropAllIndex = function(configuration, test) {
  * @_class collection
  * @_function reIndex
  */
-exports.shouldCorrectlyForceReindexOnCollection = function(configuration, test) {
-
+exports.shouldCorrectlyIndexAndForceReindexOnCollection = function(configuration, test) {
   configuration.connect("w=0&maxPoolSize=1", function(err, db) {
   // DOC_LINE // Connect to the server using MongoClient
   // DOC_LINE MongoClient.connect('mongodb://localhost:27017/test', function(err, db) {
   // DOC_START
 
     // Create a collection we want to drop later
-    db.createCollection('shouldCorrectlyForceReindexOnCollection', function(err, collection) {
+    db.createCollection('shouldCorrectlyIndexAndForceReindexOnCollection', function(err, collection) {
       test.equal(null, err);
 
       // Insert a bunch of documents for the index

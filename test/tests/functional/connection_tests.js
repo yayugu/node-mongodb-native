@@ -212,3 +212,64 @@ exports.testConnectBadUrl = function(configuration, test) {
   });
   test.done();
 };
+
+/**
+ * Example of a simple url connection string, with no acknowledgement of writes.
+ *
+ * @_class db
+ * @_function Db.connect
+ */
+exports.shouldCorrectlyDoSimpleCountExamplesWithUrl = function(configuration, test) {
+  var Db = configuration.getMongoPackage().Db;
+  // DOC_START
+  // Connect to the server
+  Db.connect(configuration.url(), function(err, db) {
+    test.equal(null, err);
+    
+    db.close();
+    test.done();
+  });
+  // DOC_END
+}
+
+/**
+ * @ignore
+ */
+exports.shouldCorrectlyReturnTheRightDbObjectOnOpenEmit = function(configuration, test) {
+  var db_conn = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
+  var db2 = db_conn.db("test2");
+
+  db2.on('open', function (err, db) {
+    test.equal(db2.databaseName, db.databaseName);
+  });                                                                             
+
+  db_conn.on('open', function (err, db) {                                                
+    test.equal(db_conn.databaseName, db.databaseName);
+  });                                                                                                          
+
+  db_conn.open(function (err) {                                                   
+    if(err) throw err;                                                           
+    var col1 = db_conn.collection('test');                                        
+    var col2 = db2.collection('test');                                            
+
+    var testData = { value : "something" };                                       
+    col1.insert(testData, function (err) {                                        
+      if (err) throw err;                                                         
+      col2.insert(testData, function (err) {                                      
+        if (err) throw err;                                                       
+        db2.close();                                                              
+        console.log("done"); 
+        test.done();                                                     
+      });                                                                         
+    });                                                                           
+  });  
+}
+
+/**
+ * @ignore
+ */
+exports.shouldCorrectlyReturnFalseOnIsConnectBeforeConnectionHappened = function(configuration, test) {
+  var db_conn = configuration.newDbInstance({w:1}, {poolSize:1, auto_reconnect:false});
+  test.equal(false, db_conn.serverConfig.isConnected());
+  test.done();
+}
