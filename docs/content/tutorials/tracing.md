@@ -195,6 +195,24 @@ require('../..').instrument(function(err, instrumentations) {
 });
 ```
 
+## Available Integration Points
+
+Currently the available integration points are.
+
+| `Prototype`          | `Description`                              |
+| :------------- | :-----------------------------------------------------------|
+| Db | Db methods |
+| Collection | Collection methods |
+| GridStore | GridStore methods |
+| OrderedBulkOperation | Ordered bulk operation methods |
+| UnorderedBulkOperation | Unordered bulk operation methods |
+| CommandCursor | Command cursor queries |
+| AggregationCursor | Aggregation cursor queries |
+| Cursor | Query cursor queries |
+| Server | Low level server operations, return objects always contain the connection they where executed against |
+| ReplSet | Low level server operations, return objects always contain the connection they where executed against |
+| Mongos | Low level server operations, return objects always contain the connection they where executed against |
+
 
 
 
