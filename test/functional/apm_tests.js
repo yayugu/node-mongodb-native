@@ -77,11 +77,11 @@ exports['Should correctly instrument driver with all possibilities'] = {
               var applyMethod = function(_method) {
                 var func = object.prototype[_method];
                 object.prototype[_method] = function() {
-                  console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
-                    , obj.name, _method, options.callback
-                    , options.promise
-                    , options.returns != null
-                    , options.static == null ? false : options.static));
+                  // console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
+                  //   , obj.name, _method, options.callback
+                  //   , options.promise
+                  //   , options.returns != null
+                  //   , options.static == null ? false : options.static));
                   if(!methodsCalled[_method]) methodsCalled[_method] = 0;
                   methodsCalled[_method] = methodsCalled[_method] + 1;
 
@@ -118,11 +118,11 @@ exports['Should correctly instrument driver with all possibilities'] = {
               var applyMethod = function(_method) {
                 var func = object[_method];
                 object[_method] = function() {
-                  console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
-                    , obj.name, _method, options.callback
-                    , options.promise
-                    , options.returns != null
-                    , options.static == null ? false : options.static));
+                  // console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
+                  //   , obj.name, _method, options.callback
+                  //   , options.promise
+                  //   , options.returns != null
+                  //   , options.static == null ? false : options.static));
                   if(!methodsCalled[_method]) methodsCalled[_method] = 0;
                   methodsCalled[_method] = methodsCalled[_method] + 1;
 
@@ -159,11 +159,11 @@ exports['Should correctly instrument driver with all possibilities'] = {
               var applyMethod = function(_method) {
                 var func = object.prototype[_method];
                 object.prototype[_method] = function() {
-                  console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
-                    , obj.name, _method, options.callback
-                    , options.promise
-                    , options.returns != null
-                    , options.static == null ? false : options.static));
+                  // console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
+                  //   , obj.name, _method, options.callback
+                  //   , options.promise
+                  //   , options.returns != null
+                  //   , options.static == null ? false : options.static));
                   if(!methodsCalled[_method]) methodsCalled[_method] = 0;
                   methodsCalled[_method] = methodsCalled[_method] + 1;
 
@@ -200,11 +200,11 @@ exports['Should correctly instrument driver with all possibilities'] = {
               var applyMethod = function(_method) {
                 var func = object[_method];
                 object[_method] = function() {
-                  console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
-                    , obj.name, _method, options.callback
-                    , options.promise
-                    , options.returns != null
-                    , options.static == null ? false : options.static));
+                  // console.log(f("================ %s:%s callback:%s, promise:%s, returns:%s, static:%s"
+                  //   , obj.name, _method, options.callback
+                  //   , options.promise
+                  //   , options.returns != null
+                  //   , options.static == null ? false : options.static));
                   if(!methodsCalled[_method]) methodsCalled[_method] = 0;
                   methodsCalled[_method] = methodsCalled[_method] + 1;
 
@@ -253,10 +253,10 @@ exports['Should correctly instrument driver with all possibilities'] = {
     var MongoClient = require('../..');
     MongoClient.connect(configuration.url(), function(err, client) {
       client.collection('apm1').insertOne({a:1}, function(err, r) {
-        console.log("--------------------------------------------------")
-        // test.equal(null, err);
-        // test.equal(1, r.insertedCount);
-        // test.equal(1, methodsCalled.insertOne);
+        // console.log("--------------------------------------------------")
+        test.equal(null, err);
+        test.equal(1, r.insertedCount);
+        test.equal(1, methodsCalled.insertOne);
 
         client.close();
         test.done();
