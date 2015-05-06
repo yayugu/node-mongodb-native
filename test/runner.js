@@ -14,8 +14,8 @@ var Runner = require('integra').Runner
   , TestNameFilter = require('integra').TestNameFilter
   , path = require('path')
   , rimraf = require('rimraf')
+  , semver = require('semver')
   , fs = require('fs')
-  , m = require('mongodb-version-manager')
   , f = require('util').format;
 
 var detector = require('gleak')();
@@ -493,6 +493,11 @@ if(argv.t == 'functional') {
   } catch(err) {
   }
 
+  // Special handling for 0.8.x
+  if(semver.satisfies(process.version, '<0.10.0')) return runner.run(config); 
+
+  // 0.10.x or higher
+  var m = require('mongodb-version-manager');
   // Kill any running MongoDB processes and
   // `install $MONGODB_VERSION` || `use existing installation` || `install stable`
   m(function(err){
