@@ -1,3 +1,7 @@
+2.0.29
+-----------------
+- Added support for w>1 with pipeline findAndModify + GLE
+
 2.0.28 04-24-2015
 -----------------
 - Bumped mongodb-core to 1.2.25
