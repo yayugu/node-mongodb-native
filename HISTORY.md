@@ -1,6 +1,21 @@
-2.0.29
+2.0.32
 -----------------
 - Added support for w>1 with pipeline findAndModify + GLE
+
+2.0.31 05-08-2015
+-----------------
+- NODE-461 Tripping on error "no chunks found for file, possibly corrupt" when there is no error.
+
+2.0.30 05-07-2015
+-----------------
+- NODE-460 fix; don't set authMechanism for user in db.authenticate() to avoid mongoose authentication issue.
+
+2.0.29 05-07-2015
+-----------------
+- NODE-444 Possible memory leak, too many listeners added.
+- NODE-459 Auth failure using Node 0.8.28, MongoDB 3.0.2 & mongodb-node-native 1.4.35.
+- Bumped mongodb-core to 1.2.26.
+>>>>>>> 2.0
 
 2.0.28 04-24-2015
 -----------------
