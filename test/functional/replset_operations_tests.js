@@ -538,10 +538,44 @@ exports['Should correctly execute findAndModify command but fail writeconcern'] 
       var col = db.collection('findAndModifyGLE');
       col.findAndModify({a:1}, [['a', 1]], {$set: {b:1}}, {w:6, wtimeout:100, new:true, upsert:true}, function(err, r) {
         test.ok(err != null);
-        // test.equal(null, err);
-        // console.log("---------------------------------------------------------")
-        // console.dir(err)
-        // console.log(JSON.stringify(r, null, 2))
+
+        db.close();
+        restartAndDone(configuration, test);        
+      });
+    });
+  }
+}
+
+/**
+ * @ignore
+ */
+exports['Should correctly execute findAndModify but no write happened so ignore wtimeout error'] = {
+  metadata: { requires: {
+      topology: 'replicaset'
+    , mongodb: '>=2.6.0'
+  } },
+
+  // The actual test we wish to run
+  test: function(configuration, test) {
+    var mongo = configuration.require
+      , MongoClient = mongo.MongoClient;
+
+    // Create url
+    var url = format("mongodb://%s,%s/%s?replicaSet=%s&readPreference=%s"
+      , format("%s:%s", configuration.host, configuration.port)
+      , format("%s:%s", configuration.host, configuration.port + 1)
+      , "integration_test_"
+      , configuration.replicasetName
+      , "primary");
+
+    MongoClient.connect(url, function(err, db) {
+      test.equal(null, err);
+
+      // Get the collection
+      var col = db.collection('findAndModifyGLE2');
+      col.findAndModify({a:1}, [['a', 1]], {$set: {b:1}, $failure: {}}, {w:6, wtimeout:100, new:true, upsert:false}, function(err, r) {
+        test.equal(null, err);
+        test.equal(null, r.result.value);
 
         db.close();
         restartAndDone(configuration, test);        
