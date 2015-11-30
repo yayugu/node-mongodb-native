@@ -82,8 +82,8 @@ var Configuration = function(options) {
   var writeConcernMax = options.writeConcernMax || {w:1};
 
   // Default function
-  var defaultFunction = function(self, _mongo) {
-    return new _mongo.Server(self.host, self.port);
+  var defaultFunction = function(host, port, options) {
+    return new mongo.Server(host, port, options || {});
   };
 
   // Create a topology function
@@ -105,7 +105,7 @@ var Configuration = function(options) {
             var Logger = require('mongodb-topology-manager').Logger;
             // Logger.setLevel('info');
             // Create an instance
-            new mongo.Db(self.db, topology(self, mongo)).open(function(err, db) {
+            new mongo.Db(self.db, topology(host, port)).open(function(err, db) {
               if(err) return callback(err);
 
               db.dropDatabase(function(err) {
@@ -150,7 +150,9 @@ var Configuration = function(options) {
       newDbInstance: function(dbOptions, serverOptions) {
         serverOptions = serverOptions || {};
         // Override implementation
-        if(options.newDbInstance) return options.newDbInstance(dbOptions, serverOptions);
+        if(options.newDbInstance) {
+          return options.newDbInstance(dbOptions, serverOptions);
+        }
 
         // Set up the options
         var keys = Object.keys(options);
@@ -208,30 +210,30 @@ var Configuration = function(options) {
         return f(url, auth);
       },
 
-      newTopology: function(options, callback) {
-        if(typeof options == 'function') {
-          callback = options;
-          options = {};
-        }
-
-        callback(null, topology(this, mongo));
-      },
-
-      newConnection: function(options, callback) {
-        if(typeof options == 'function') {
-          callback = options;
-          options = {};
-        }
-
-        var server = topology(this, mongo);
-        // Set up connect
-        server.once('connect', function() {
-          callback(null, server);
-        });
-
-        // Connect
-        server.connect();
-      },
+      // newTopology: function(options, callback) {
+      //   if(typeof options == 'function') {
+      //     callback = options;
+      //     options = {};
+      //   }
+      //
+      //   callback(null, topology(this, mongo));
+      // },
+      //
+      // newConnection: function(options, callback) {
+      //   if(typeof options == 'function') {
+      //     callback = options;
+      //     options = {};
+      //   }
+      //
+      //   var server = topology(this, mongo);
+      //   // Set up connect
+      //   server.once('connect', function() {
+      //     callback(null, server);
+      //   });
+      //
+      //   // Connect
+      //   server.connect();
+      // },
 
       // Additional parameters needed
       database: db || options.db,
@@ -307,33 +309,33 @@ var testFiles = [
   , '/test/functional/document_validation_tests.js'
   , '/test/functional/ignore_undefined_tests.js'
 
-  // Replicaset tests
-  , '/test/functional/replset_read_preference_tests.js'
-  , '/test/functional/replset_operations_tests.js'
-  , '/test/functional/replset_failover_tests.js'
-  , '/test/functional/replset_connection_tests.js'
+  // // Replicaset tests
+  // , '/test/functional/replset_read_preference_tests.js'
+  // , '/test/functional/replset_operations_tests.js'
+  // , '/test/functional/replset_failover_tests.js'
+  // , '/test/functional/replset_connection_tests.js'
 
-  // Sharding tests
-  , '/test/functional/sharding_failover_tests.js'
-  , '/test/functional/sharding_connection_tests.js'
-  , '/test/functional/sharding_read_preference_tests.js'
-
-  // SSL tests
-  , '/test/functional/ssl_mongoclient_tests.js'
-  , '/test/functional/ssl_validation_tests.js'
-  , '/test/functional/ssl_x509_connect_tests.js'
-
-  // SCRAM tests
-  , '/test/functional/scram_tests.js'
-
-  // LDAP Tests
-  , '/test/functional/ldap_tests.js'
-
-  // Kerberos Tests
-  , '/test/functional/kerberos_tests.js'
-
-  // Authentication Tests
-  , '/test/functional/authentication_tests.js'
+  // // Sharding tests
+  // , '/test/functional/sharding_failover_tests.js'
+  // , '/test/functional/sharding_connection_tests.js'
+  // , '/test/functional/sharding_read_preference_tests.js'
+  //
+  // // SSL tests
+  // , '/test/functional/ssl_mongoclient_tests.js'
+  // , '/test/functional/ssl_validation_tests.js'
+  // , '/test/functional/ssl_x509_connect_tests.js'
+  //
+  // // SCRAM tests
+  // , '/test/functional/scram_tests.js'
+  //
+  // // LDAP Tests
+  // , '/test/functional/ldap_tests.js'
+  //
+  // // Kerberos Tests
+  // , '/test/functional/kerberos_tests.js'
+  //
+  // // Authentication Tests
+  // , '/test/functional/authentication_tests.js'
 ]
 
 // Check if we support es6 generators
@@ -421,11 +423,15 @@ if(argv.t == 'functional') {
   if(argv.e == 'replicaset') {
     config = {
         host: 'localhost', port: 31000, setName: 'rs'
-      , topology: function(self, _mongo) {
-        return new _mongo.ReplSet([{
-            host: 'localhost', port: 31000
-        }], { setName: 'rs' });
-      }
+      , topology: function(host, port, serverOptions) {
+          host = host || 'localhost'; port = port || 31000;
+          serverOptions = clone(serverOptions);
+          serverOptions.rs_name = 'rs';
+          serverOptions.poolSize = 1;
+          return new mongo.ReplSet([
+            new mongo.Server(host, port)
+          ], serverOptions);
+        }
       , manager: new ReplSetManager('mongod', [{
         tags: {loc: 'ny'},
         // mongod process options
@@ -477,13 +483,11 @@ if(argv.t == 'functional') {
       , port: 51000
       , skipStart: startupOptions.skipStartup
       , skipTermination: startupOptions.skipShutdown
-      , topology: function(self, _mongo) {
-        return new _mongo.Mongos([{
-            host: 'localhost'
-          , port: 51000
-        }]);
+      , topology: function(host, port, options) {
+        return new mongo.Mongos([
+          new mongo.Server(host, port, options || {})
+        ]);
       }, manager: new ShardingManager({
-
       })
     }
   }
