@@ -311,11 +311,11 @@ var testFiles = [
   , '/test/functional/document_validation_tests.js'
   , '/test/functional/ignore_undefined_tests.js'
 
-  // // Replicaset tests
-  // , '/test/functional/replset_read_preference_tests.js'
-  // , '/test/functional/replset_operations_tests.js'
-  // , '/test/functional/replset_failover_tests.js'
-  // , '/test/functional/replset_connection_tests.js'
+  // Replicaset tests
+  , '/test/functional/replset_read_preference_tests.js'
+  , '/test/functional/replset_operations_tests.js'
+  , '/test/functional/replset_failover_tests.js'
+  , '/test/functional/replset_connection_tests.js'
 
   // // Sharding tests
   // , '/test/functional/sharding_failover_tests.js'
@@ -478,7 +478,6 @@ if(argv.t == 'functional') {
         }
       }, {
         tags: {loc: 'sf'},
-        priority:0,
         options: {
           bind_ip: 'localhost',
           port: 31002,
@@ -487,6 +486,7 @@ if(argv.t == 'functional') {
         }
       }, {
         tags: {loc: 'sf'},
+        priority: 0,
         options: {
           bind_ip: 'localhost',
           port: 31003,
