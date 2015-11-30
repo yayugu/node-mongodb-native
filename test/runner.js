@@ -76,6 +76,7 @@ var Configuration = function(options) {
   var skipStart = typeof options.skipStart == 'boolean' ? options.skipStart : false;
   var skipTermination = typeof options.skipTermination == 'boolean' ? options.skipTermination : false;
   var setName = options.setName || 'rs';
+  var replicasetName = options.replicasetName || 'rs';
 
   // Write concerns
   var writeConcern = options.writeConcern || {w:1};
@@ -243,6 +244,7 @@ var Configuration = function(options) {
       setName: setName,
       db: db,
       manager: manager,
+      replicasetName: replicasetName,
       writeConcern: function() { return clone(writeConcern) },
       writeConcernMax: function() { return clone(writeConcernMax) }
     }
@@ -409,43 +411,70 @@ if(argv.r) {
 // Are we running a functional test
 if(argv.t == 'functional') {
   console.log(path.join(path.resolve('db'), f("data-%d", 27017)))
+  // Contain the config
+  var config = null;
+
   //
-  // Single server
-  var config = {
-      host: 'localhost'
-    , port: 27017
-    , manager: new ServerManager('mongod', {
-      dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
-      setParameter: ['enableTestCommands=1']
-    })
+  // Execute the final code
+  var executeTestSuite = function() {
+    // If we have a test we are filtering by
+    if(argv.f) {
+      runner.plugin(new FileFilter(argv.f));
+    }
+
+    if(argv.n) {
+      runner.plugin(new TestNameFilter(argv.n));
+    }
+
+    // Add travis filter
+    runner.plugin(new TravisFilter());
+
+    // Skip startup
+    if(startupOptions.skipStartup) {
+      return runner.run(Configuration(config));
+    }
+
+    // Skip the version download and use local mongod in PATH
+    if(argv.l) {
+      return runner.run(Configuration(config));
+    }
+
+    // Kill any running MongoDB processes and
+    // `install $MONGODB_VERSION` || `use existing installation` || `install stable`
+    m(function(err){
+      if(err) return console.error(err) && process.exit(1);
+
+      m.current(function(err, version){
+        if(err) return console.error(err) && process.exit(1);
+        console.log('Running tests against MongoDB version `%s`', version);
+        // Run the configuration
+        runner.run(Configuration(config));
+      });
+    });
   }
 
+  //
+  // Replicaset configuration
   if(argv.e == 'replicaset') {
-    config = {
-        host: 'localhost', port: 31000, setName: 'rs'
-      , topology: function(host, port, serverOptions) {
-          host = host || 'localhost'; port = port || 31000;
-          serverOptions = clone(serverOptions);
-          serverOptions.rs_name = 'rs';
-          serverOptions.poolSize = 1;
-          return new mongo.ReplSet([
-            new mongo.Server(host, port)
-          ], serverOptions);
-        }
-      , manager: new ReplSetManager('mongod', [{
+    // Establish the server version
+    new ServerManager('mongod').discover().then(function(r) {
+      // The individual nodes
+      var nodes = [{
         tags: {loc: 'ny'},
         // mongod process options
         options: {
           bind_ip: 'localhost',
           port: 31000,
-          dbpath: f('%s/../db/31000', __dirname)
+          dbpath: f('%s/../db/31000', __dirname),
+          setParameter: ['enableTestCommands=1']
         }
       }, {
         tags: {loc: 'sf'},
         options: {
           bind_ip: 'localhost',
           port: 31001,
-          dbpath: f('%s/../db/31001', __dirname)
+          dbpath: f('%s/../db/31001', __dirname),
+          setParameter: ['enableTestCommands=1']
         }
       }, {
         tags: {loc: 'sf'},
@@ -453,28 +482,62 @@ if(argv.t == 'functional') {
         options: {
           bind_ip: 'localhost',
           port: 31002,
-          dbpath: f('%s/../db/31002', __dirname)
+          dbpath: f('%s/../db/31002', __dirname),
+          setParameter: ['enableTestCommands=1']
         }
       }, {
         tags: {loc: 'sf'},
         options: {
           bind_ip: 'localhost',
           port: 31003,
-          dbpath: f('%s/../db/31003', __dirname)
+          dbpath: f('%s/../db/31003', __dirname),
+          setParameter: ['enableTestCommands=1']
         }
       }, {
         arbiter: true,
         options: {
           bind_ip: 'localhost',
           port: 31004,
-          dbpath: f('%s/../db/31004', __dirname)
+          dbpath: f('%s/../db/31004', __dirname),
+          setParameter: ['enableTestCommands=1']
         }
-      }], {
-        replSet: 'rs'
-      })
-    }
+      }];
+
+      // Do we have 3.2
+      if(r.version[0] == 3 && r.version[1] == 2) {
+        nodes = nodes.map(function(x) {
+          x.options.enableMajorityReadConcern = null;
+          return x;
+        });
+      }
+
+      // Test suite Configuration
+      config = {
+          host: 'localhost', port: 31000, setName: 'rs'
+        , url: "mongodb://%slocalhost:31000/integration_tests?rs_name=rs"
+        , writeConcernMax: {w: 'majority', wtimeout: 30000}
+        , replicasetName: 'rs'
+        , topology: function(host, port, serverOptions) {
+            host = host || 'localhost'; port = port || 31000;
+            serverOptions = clone(serverOptions);
+            serverOptions.rs_name = 'rs';
+            serverOptions.poolSize = 1;
+            return new mongo.ReplSet([
+              new mongo.Server(host, port)
+            ], serverOptions);
+          }
+        , manager: new ReplSetManager('mongod', nodes, {
+          replSet: 'rs'
+        })
+      }
+
+      // Execute test suite
+      executeTestSuite();
+    });
   }
 
+  //
+  // Sharded configuration
   if(argv.e == 'sharded') {
     //
     // Sharded
@@ -490,40 +553,22 @@ if(argv.t == 'functional') {
       }, manager: new ShardingManager({
       })
     }
+
+    executeTestSuite();
   }
 
-  // If we have a test we are filtering by
-  if(argv.f) {
-    runner.plugin(new FileFilter(argv.f));
+  //
+  // Single server
+  if(!argv.e) {
+    config = {
+        host: 'localhost'
+      , port: 27017
+      , manager: new ServerManager('mongod', {
+        dbpath: path.join(path.resolve('db'), f("data-%d", 27017)),
+        setParameter: ['enableTestCommands=1']
+      })
+    }
+
+    executeTestSuite();
   }
-
-  if(argv.n) {
-    runner.plugin(new TestNameFilter(argv.n));
-  }
-
-  // Add travis filter
-  runner.plugin(new TravisFilter());
-
-  // Skip startup
-  if(startupOptions.skipStartup) {
-    return runner.run(Configuration(config));
-  }
-
-  // Skip the version download and use local mongod in PATH
-  if(argv.l) {
-    return runner.run(Configuration(config));
-  }
-
-  // Kill any running MongoDB processes and
-  // `install $MONGODB_VERSION` || `use existing installation` || `install stable`
-  m(function(err){
-    if(err) return console.error(err) && process.exit(1);
-
-    m.current(function(err, version){
-      if(err) return console.error(err) && process.exit(1);
-      console.log('Running tests against MongoDB version `%s`', version);
-      // Run the configuration
-      runner.run(Configuration(config));
-    });
-  });
 }

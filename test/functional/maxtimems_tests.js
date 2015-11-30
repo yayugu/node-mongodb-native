@@ -93,7 +93,6 @@ exports['Should Correctly fail with maxTimeMS error'] = {
         test.equal(null, err);
 
         db.admin().command({configureFailPoint: "maxTimeAlwaysTimeOut", mode: "alwaysOn"}, function(err, result) {
-          console.dir(err)
           test.equal(true, result.ok);
 
           col.find({}).maxTimeMS(10).toArray(function(err, docs) {
