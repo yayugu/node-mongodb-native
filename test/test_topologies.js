@@ -19,10 +19,12 @@ Sharded.prototype.start = function(callback) {
   return new P(function(resolve, reject) {
     // Add one shard
     self.topology.addShard([{
+      tags: {"loc":"ny"},
       options: {
         bind_ip: 'localhost', port: 31000, dbpath: f('%s/../db/31000', __dirname)
       }
     }, {
+      tags: {"loc":"sf"},
       options: {
         bind_ip: 'localhost', port: 31001, dbpath: f('%s/../db/31001', __dirname)
       }
@@ -38,10 +40,12 @@ Sharded.prototype.start = function(callback) {
     }).then(function() {
       // Add one shard
       self.topology.addShard([{
+        tags: {"loc":"ny"},
         options: {
           bind_ip: 'localhost', port: 31010, dbpath: f('%s/../db/31010', __dirname)
         }
       }, {
+        tags: {"loc":"sf"},
         options: {
           bind_ip: 'localhost', port: 31011, dbpath: f('%s/../db/31011', __dirname)
         }

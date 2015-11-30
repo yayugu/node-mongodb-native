@@ -317,11 +317,11 @@ var testFiles = [
   , '/test/functional/replset_failover_tests.js'
   , '/test/functional/replset_connection_tests.js'
 
-  // // Sharding tests
-  // , '/test/functional/sharding_failover_tests.js'
-  // , '/test/functional/sharding_connection_tests.js'
-  // , '/test/functional/sharding_read_preference_tests.js'
-  //
+  // Sharding tests
+  , '/test/functional/sharding_failover_tests.js'
+  , '/test/functional/sharding_connection_tests.js'
+  , '/test/functional/sharding_read_preference_tests.js'
+
   // // SSL tests
   // , '/test/functional/ssl_mongoclient_tests.js'
   // , '/test/functional/ssl_validation_tests.js'
@@ -410,7 +410,6 @@ if(argv.r) {
 
 // Are we running a functional test
 if(argv.t == 'functional') {
-  console.log(path.join(path.resolve('db'), f("data-%d", 27017)))
   // Contain the config
   var config = null;
 
@@ -544,6 +543,8 @@ if(argv.t == 'functional') {
     config = {
         host: 'localhost'
       , port: 51000
+      , url: "mongodb://%slocalhost:51000/integration_tests"
+      , writeConcernMax: {w: 'majority', wtimeout: 30000}
       , skipStart: startupOptions.skipStartup
       , skipTermination: startupOptions.skipShutdown
       , topology: function(host, port, options) {
